@@ -1,0 +1,32 @@
+{
+  "name": "@hedone/form",
+  "version": "0.0.1",
+  "main": "./index.js",
+  "types": "src",
+  "module": "src/index.ts",
+  "browser": "lib/umd/index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["react-form", "form", "react", "form-validation"],
+  "author": "swcbo",
+  "license": "ISC",
+  "dependencies": {
+    "@hedone/form-core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsconfig": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "eslint": "*",
+    "typescript": "*"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
