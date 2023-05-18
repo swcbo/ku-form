@@ -1,4 +1,4 @@
-import { NamePath, InternalNamePath } from '../type';
+import { NamePath } from '../type';
 
 export const getNamePath = (path: NamePath) => {
   return toArray(path);

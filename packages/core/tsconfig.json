@@ -1,5 +1,14 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": ["."],
-  "exclude": ["dist", "build", "node_modules"]
+  "include": ["src"],
+  "exclude": ["lib", "build", "node_modules"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationDir": "./typings",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
 }

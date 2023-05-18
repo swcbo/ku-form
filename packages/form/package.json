@@ -10,7 +10,12 @@
     "lint": "eslint . --ext .ts,.tsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["react-form", "form", "react", "form-validation"],
+  "keywords": [
+    "react-form",
+    "form",
+    "react",
+    "form-validation"
+  ],
   "author": "swcbo",
   "license": "ISC",
   "dependencies": {
