@@ -23,21 +23,71 @@ export type GroupMap = Record<
 export type ValuesInT<T extends StoreValue> = {
   [key in keyof T]: T[key];
 };
+export interface ValidateParams extends Omit<NameCollection, 'getStoreAll'> {
+  options?: ValidateOptions;
+  triggerName?: string;
+}
+export interface ValidateOptions {
+  /** not trigger status update */
+  validateOnly?: boolean;
+}
+
+export interface Meta {
+  touched: boolean;
+  validating: boolean;
+  errors: string[];
+  name: InternalNamePath;
+  validated: boolean;
+}
 
 export interface FormInstance<T extends StoreValue = StoreValue> {
   getFieldValue: (name: NamePath) => any;
-  getFieldsValue: (collection?: NameCollection) => T;
+  getFieldsValue: (collection?: NameCollection) => Partial<T>;
   setFieldValue: (name: NamePath, value: any) => void;
   setFieldsValue: (values: ValuesInT<T>) => void;
-  resetFields: (collection?: NameCollection) => void;
-  clearValidate: (collection?: NameCollection) => void;
-  validateFields: (collection?: NameCollection) => Promise<T>;
-  isFieldsTouched: (validate?: NameCollection) => boolean;
-  setInitValue: (values: ValuesInT<T>) => void;
+  resetFields: (collection?: Omit<NameCollection, 'getStoreAll'>) => void;
+  validateFields: (options?: ValidateParams) => Promise<Partial<T>>;
+  isFieldsTouched: (validate?: Omit<NameCollection, 'getStoreAll'>) => boolean;
+  // setInitValue: (values: ValuesInT<T>) => void;
   submit: () => void;
-  setInitialValues: (values: T) => void;
 }
 
+export interface ValidateErrorEntity<T extends StoreValue = StoreValue> {
+  values: T;
+  errorFields: { name: InternalNamePath; errors: string[] }[];
+  outOfDate: boolean;
+}
+
+export interface Callbacks<T> {
+  onValuesChange?: (
+    changedValues: Partial<T>,
+    values: T,
+    source: UpdateAction['source'],
+  ) => void;
+  onFinish?: (values: Partial<T>) => void;
+  onFinishFailed?: (errorInfo: ValidateErrorEntity<T>) => void;
+}
+// ============== internal =====================================
+
+export interface InternalHooks<T extends StoreValue = StoreValue> {
+  registerField: (entity: FieldEntity) => () => void;
+  setInitialValues: (values: T, init: boolean) => void;
+  setPreserve: (preserve?: boolean) => void;
+  getInitialValue: (namePath: InternalNamePath) => T;
+  registerGroup: (entity: GroupEntity) => () => void;
+  setCallbacks: (callbacks: Callbacks<T>) => void;
+  dispatch: (action: ReducerAction) => void;
+}
+
+export interface InternalFormInstance<T extends StoreValue = StoreValue>
+  extends FormInstance<T> {
+  getInternalHooks: () => InternalHooks<T> | undefined;
+}
+
+export interface InternalKuFormInstance
+  extends Omit<FormInstance, 'validateFields' | 'clearValidate'> {}
+
+// ================ basic =====================
 export interface FormBasicProps {
   /** 是否编辑 默认true */
   editable?: boolean;
@@ -46,6 +96,13 @@ export interface FormBasicProps {
   /** 当字段被删除时保留字段值 */
   preserve?: boolean;
 }
+
+export interface FormBasicField {
+  name?: NamePath;
+  dependency?: Dependency[];
+}
+
+// ==================== props =================
 
 export interface FormProps<T extends StoreValue = StoreValue> extends FormBasicProps {
   layout?: 'horizontal' | 'vertical' | 'inline';
@@ -74,17 +131,12 @@ export interface FormField extends FormBasicField, FormBasicProps {
   children?: ReactNode | ((props: ChildProps, form: FormInstance<Values>) => ReactNode);
 }
 
-export interface InternalKuFormInstance
-  extends Omit<FormInstance, 'validateFields' | 'clearValidate'> {}
-
+// ==================== dependency ====================
 export interface Dependency {
   type: 'value' | 'visible' | 'disabled';
 }
 
-export interface FormBasicField {
-  name?: NamePath;
-  dependency?: Dependency[];
-}
+// ==================== entity ====================
 
 interface ChildProps {
   [name: string]: any;
@@ -95,7 +147,8 @@ export interface FieldEntity {
   getGroupNamePath: () => InternalNamePath | undefined;
   getNamePath: () => InternalNamePath;
   isPreserve: () => boolean | undefined;
-  validate: () => Promise<any[]>;
+  validate: (options?: ValidateOptions) => Promise<ValidateErrorEntity>;
+  getMeta: () => Meta;
   props: Pick<FormField, 'name' | 'rules' | 'dependency' | 'initialValue'>;
 }
 
@@ -112,9 +165,9 @@ type RemoveInfo = {
   type: 'remove';
 };
 
-type SetFieldInfo = {
-  type: 'setField';
-  source: 'internal' | 'external' | 'reset';
+type ValueUpdateInfo = {
+  type: 'valueUpdate';
+  source: 'internal' | 'external';
 };
 
 type DependenciesUpdateInfo = {
@@ -130,7 +183,7 @@ type ValidateInfo = {
 export type ValueChangeInfo =
   | ResetInfo
   | RemoveInfo
-  | SetFieldInfo
+  | ValueUpdateInfo
   | DependenciesUpdateInfo
   | ClearValidateInfo
   | ValidateInfo;
@@ -139,3 +192,20 @@ export interface ValueChangeParams<T extends StoreValue> {
   prevStore?: T;
   namePathList?: NamePath[];
 }
+
+// ==================== action ====================
+
+export interface UpdateAction {
+  type: 'updateValue';
+  namePath: InternalNamePath;
+  value: StoreValue;
+  source: 'trigger' | 'dependency';
+}
+
+interface ValidateAction {
+  type: 'validateField';
+  namePath: InternalNamePath;
+  triggerName: string;
+}
+
+export type ReducerAction = UpdateAction | ValidateAction;
