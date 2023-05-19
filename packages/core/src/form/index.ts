@@ -48,9 +48,9 @@ class Form<T extends Store = Store> {
       if (!this.isMergedPreserve(entity.isPreserve())) {
         const namePath = entity.getNamePath();
         const defaultValue = this.getInitialValue(namePath);
-        const prevStore = this.#store;
+        const prevStore = cloneDeep(this.#store);
         this.setFieldValue(namePath, undefined);
-        this.updateStore(set(prevStore, namePath, defaultValue));
+        set(this.#store, namePath, defaultValue);
         this.#observer.dispatch({
           prevStore,
           info: { type: 'remove' },
@@ -142,8 +142,8 @@ class Form<T extends Store = Store> {
     source: UpdateAction['source'],
   ) => {
     const namePath = getNamePath(name);
-    const prevStore = this.#store;
-    this.updateStore(set(this.#store, namePath, value));
+    const prevStore = cloneDeep(this.#store);
+    set(this.#store, namePath, value);
 
     this.#observer.dispatch({
       prevStore,
@@ -178,7 +178,7 @@ class Form<T extends Store = Store> {
   };
 
   private setFieldValue = (name: NamePath, value: StoreValue) => {
-    const prevStore = this.#store;
+    const prevStore = cloneDeep(this.#store);
     setValue(this.#store, name, value);
     this.#observer.dispatch({
       prevStore,
@@ -188,7 +188,7 @@ class Form<T extends Store = Store> {
   };
 
   private setFieldsValue = (value: Partial<T>) => {
-    const prevStore = this.#store;
+    const prevStore = cloneDeep(this.#store);
     this.#store = merge({}, this.#store, value);
     this.#observer.dispatch({
       prevStore,
@@ -200,7 +200,7 @@ class Form<T extends Store = Store> {
   };
 
   private resetFields = (nameCollection?: Omit<NameCollection, 'getStoreAll'>) => {
-    const prevStore = this.#store;
+    const prevStore = cloneDeep(this.#store);
     const entityList = getFieldEntitiesByCollection(nameCollection, this.#fieldEntities);
     entityList.forEach(({ getNamePath: getName }) => {
       const name = getName();
