@@ -104,15 +104,6 @@ export interface FormBasicField {
 
 // ==================== props =================
 
-export interface FormProps<T extends StoreValue = StoreValue> extends FormBasicProps {
-  layout?: 'horizontal' | 'vertical' | 'inline';
-  initialValues?: Partial<T>;
-  validateTrigger?: string | string[];
-  onValuesChange?: (changedValues: Partial<T>, values: T) => void;
-  onFinish?: (values: T) => void;
-  form?: FormInstance;
-}
-
 export interface FormGroup extends FormBasicField, FormBasicProps {
   list: FormField[];
   name: NamePath;
