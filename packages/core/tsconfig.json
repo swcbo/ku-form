@@ -5,6 +5,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "emitDeclarationOnly": true,
+    "target": "ESNext",
+    "lib": ["ESNext"],
     "declaration": true,
     "declarationDir": "./typings",
     "paths": {

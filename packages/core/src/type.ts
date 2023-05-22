@@ -80,12 +80,9 @@ export interface InternalHooks<T extends StoreValue = StoreValue> {
 }
 
 export interface InternalFormInstance<T extends StoreValue = StoreValue>
-  extends FormInstance<T> {
-  getInternalHooks: () => InternalHooks<T> | undefined;
+  extends Omit<FormInstance<T>, 'clearValidate'> {
+  getInternalHooks: () => InternalHooks<T>;
 }
-
-export interface InternalKuFormInstance
-  extends Omit<FormInstance, 'validateFields' | 'clearValidate'> {}
 
 // ================ basic =====================
 export interface FormBasicProps {
