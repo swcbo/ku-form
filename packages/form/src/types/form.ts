@@ -14,3 +14,5 @@ export interface FormProps<T extends Store = Store>
   children?: ReactNode;
   preserve?: boolean;
 }
+
+export type FormRef = FormInstance;

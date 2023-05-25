@@ -82,6 +82,7 @@ export interface InternalHooks<T extends StoreValue = StoreValue> {
 export interface InternalFormInstance<T extends StoreValue = StoreValue>
   extends Omit<FormInstance<T>, 'clearValidate'> {
   getInternalHooks: () => InternalHooks<T>;
+  validateTrigger?: string | string[];
 }
 
 // ================ basic =====================

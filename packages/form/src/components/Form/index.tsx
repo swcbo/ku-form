@@ -1,12 +1,12 @@
 import FormContext from '@/context/FormContext';
 import useForm from '@/hooks/useForm';
 import useInitFun from '@/hooks/useInit';
-import { FormProps } from '@/types/form';
-import { FormInstance, InternalFormInstance } from '@hedone/form-core';
-import { forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
+import { FormProps, FormRef } from '@/types/form';
+import { InternalFormInstance, Store } from '@hedone/form-core';
+import { Ref, forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
 
-const Form = forwardRef<FormInstance, FormProps>(
-  (
+const Form = forwardRef(
+  <T extends Store = Store>(
     {
       form,
       colon,
@@ -15,12 +15,13 @@ const Form = forwardRef<FormInstance, FormProps>(
       editable,
       disabled,
       initialValues,
+      validateTrigger = 'onChange',
       onFinish,
       onFinishFailed,
       onValuesChange,
       ...otherProps
-    },
-    ref,
+    }: FormProps<T>,
+    ref: Ref<FormRef>,
   ) => {
     const [formInstance] = useForm(form);
     const internalFormInstance = formInstance as unknown as InternalFormInstance;
@@ -55,19 +56,21 @@ const Form = forwardRef<FormInstance, FormProps>(
       [formInstance],
     );
 
-    const WrapperForm = useMemo(() => {
+    const wrapperChildren = useMemo(() => {
       return (
         <FormContext.Provider
           value={{
             ...internalFormInstance,
+            validateTrigger,
           }}>
           {children}
         </FormContext.Provider>
       );
-    }, [formInstance]);
+    }, [formInstance, validateTrigger]);
+
     return (
       <form {...otherProps} onSubmit={onSubmit} onReset={onReset}>
-        {WrapperForm}
+        {wrapperChildren}
       </form>
     );
   },
