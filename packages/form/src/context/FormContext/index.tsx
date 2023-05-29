@@ -1,14 +1,13 @@
-import { InternalFormInstance } from '@hedone/form-core';
+import { FormContextStore } from '@/types/form';
 import { createContext } from 'react';
 const warningFunc = () => {
   console.warn('Can not find FormContext');
 };
-const FormContext = createContext<InternalFormInstance>({
+const FormContext = createContext<FormContextStore>({
   registerField: warningFunc,
   setInitialValues: warningFunc,
   setPreserve: warningFunc,
   getInitialValue: warningFunc,
-  registerGroup: warningFunc,
   setCallbacks: warningFunc,
   dispatch: warningFunc,
   getInternalHooks: () => {
@@ -18,10 +17,9 @@ const FormContext = createContext<InternalFormInstance>({
       setInitialValues: warningFunc,
       setPreserve: warningFunc,
       getInitialValue: warningFunc,
-      registerGroup: warningFunc,
       setCallbacks: warningFunc,
       dispatch: warningFunc,
     };
   },
-} as unknown as InternalFormInstance);
+} as unknown as FormContextStore);
 export default FormContext;

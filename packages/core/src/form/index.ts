@@ -1,7 +1,6 @@
 import { cloneDeep, merge, set } from 'lodash-es';
 import {
   FieldEntity,
-  GroupEntity,
   NamePath,
   InternalNamePath,
   NameCollection,
@@ -24,7 +23,7 @@ class Form<T extends Store = Store> {
   #store: T = {} as T;
   #initialValues: T = {} as T;
   #fieldEntities: FieldEntity[] = [];
-  #groupMap: Map<string, GroupEntity> = new Map();
+  #scopeMap: Map<string, FieldEntity> = new Map();
   #observer = new Observer<ValueChangeParams<T>>();
   #preserve?: boolean;
   #callbacks: Callbacks<T> = {};
@@ -39,33 +38,40 @@ class Form<T extends Store = Store> {
   };
 
   private registerField = (entity: FieldEntity) => {
-    this.#fieldEntities.push(entity);
-    if (entity.props?.initialValue && entity.props?.name) {
-      this.setFieldValue(entity.props.name, entity.props.initialValue);
-    }
-    return () => {
-      this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
-      if (!this.isMergedPreserve(entity.isPreserve())) {
-        const namePath = entity.getNamePath();
-        const defaultValue = this.getInitialValue(namePath);
-        const prevStore = cloneDeep(this.#store);
-        this.setFieldValue(namePath, undefined);
-        set(this.#store, namePath, defaultValue);
-        this.#observer.dispatch({
-          prevStore,
-          info: { type: 'remove' },
-          namePathList: [entity.getNamePath()],
-        });
+    const isScope = entity.fieldType === 'scope';
+    if (isScope) {
+      if (!entity.props?.name) {
+        console.warn('Scope field must have a name.');
+        return () => {};
       }
-    };
-  };
-
-  private registerGroup = (group: GroupEntity) => {
-    const groupPath = `${group.props.name}`;
-    this.#groupMap.set(groupPath, group);
-    return () => {
-      this.#groupMap.delete(groupPath);
-    };
+      const scopePath = `${entity.props.name}`;
+      this.#scopeMap.set(scopePath, entity);
+      return () => {
+        this.#scopeMap.delete(scopePath);
+      };
+    } else {
+      this.#fieldEntities.push(entity);
+      if (entity.props?.initialValue && entity.props?.name) {
+        this.setFieldValue(entity.props.name, entity.props.initialValue);
+      }
+      return () => {
+        this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
+        if (!this.isMergedPreserve(entity.isPreserve())) {
+          const namePath = entity.getNamePath();
+          if (namePath) {
+            const defaultValue = this.getInitialValue(namePath);
+            const prevStore = cloneDeep(this.#store);
+            this.setFieldValue(namePath, undefined);
+            set(this.#store, namePath, defaultValue);
+            this.#observer.dispatch({
+              prevStore,
+              info: { type: 'remove' },
+              namePathList: [namePath],
+            });
+          }
+        }
+      };
+    }
   };
 
   // =================== get hooks  ===================
@@ -95,7 +101,6 @@ class Form<T extends Store = Store> {
   private getInternalHooks = (): InternalHooks<T> => {
     return {
       registerField: this.registerField,
-      registerGroup: this.registerGroup,
       setInitialValues: this.setInitialValues,
       getInitialValue: this.getInitialValue,
       setPreserve: this.setPreserve,
@@ -173,6 +178,7 @@ class Form<T extends Store = Store> {
       : getFieldEntitiesByCollection(nameCollection, this.#fieldEntities);
     return entityList.reduce<Partial<T>>((pre, { getNamePath }) => {
       const name = getNamePath();
+      if (!name) return pre;
       return set(pre, name, this.getFieldValue(name));
     }, {});
   };
@@ -204,19 +210,23 @@ class Form<T extends Store = Store> {
     const entityList = getFieldEntitiesByCollection(nameCollection, this.#fieldEntities);
     entityList.forEach(({ getNamePath: getName }) => {
       const name = getName();
-      const initValue = this.getInitialValue(getNamePath(name));
-      setValue(this.#store, name, initValue);
+      if (name) {
+      }
     });
     this.#observer.dispatch({
       prevStore,
       info: { type: 'reset' },
-      namePathList: entityList.map(({ getNamePath }) => getNamePath()),
+      namePathList: entityList.reduce<NamePath[]>((pre, { getNamePath }) => {
+        const name = getNamePath();
+        if (!name) return pre;
+        return [...pre, name];
+      }, []),
     });
   };
 
   private isFieldsTouched = (nameCollection?: Omit<NameCollection, 'getStoreAll'>) => {
     const entityList = getFieldEntitiesByCollection(nameCollection, this.#fieldEntities);
-    return entityList.some((entity) => entity.isFieldTouched());
+    return entityList.some((entity) => entity.isFieldTouched?.());
   };
 
   private submit = () => {
@@ -238,18 +248,18 @@ class Form<T extends Store = Store> {
 
   private validateFields = async ({
     nameList,
-    groupName,
+    scopeName,
     options,
     ...other
   }: ValidateParams = {}) => {
     const promiseList: Promise<StoreValue>[] = [];
     const collection = {
       nameList,
-      groupName,
+      scopeName,
     };
     const entityList = getFieldEntitiesByCollection(collection, this.#fieldEntities);
     entityList.forEach((entity) => {
-      if (entity.props.rules && entity.props.rules.length > 0) {
+      if (entity.props?.rules && entity.props.rules.length > 0 && entity.validate) {
         promiseList.push(
           entity.validate({
             ...options,

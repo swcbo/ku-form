@@ -1,12 +1,29 @@
+import { getNamePath, toArray } from './utils/typeUtils';
 import {
-  FormInstance,
   Store,
+  NamePath,
+  Callbacks,
+  StoreValue,
+  FormInstance,
+  InternalNamePath,
   InternalFormInstance,
+  FormInternalField,
+  FieldInjectProps,
   InternalHooks,
-  FormBasicProps,
 } from './type';
 import Form from './form';
+export { getNamePath, toArray };
 
-export type { FormInstance, Store, InternalFormInstance, InternalHooks, FormBasicProps };
-
+export type {
+  Store,
+  NamePath,
+  Callbacks,
+  StoreValue,
+  FormInstance,
+  InternalHooks,
+  InternalNamePath,
+  FieldInjectProps,
+  FormInternalField,
+  InternalFormInstance,
+};
 export default Form;

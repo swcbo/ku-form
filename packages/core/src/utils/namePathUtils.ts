@@ -2,13 +2,13 @@ import { FieldEntity, NameCollection, NamePath } from '../type';
 
 /** Return field entities from the collection. If the collection is not passed, return all field entities. */
 export const getFieldEntitiesByCollection = (
-  { groupName, nameList }: NameCollection = {},
+  { scopeName, nameList }: NameCollection = {},
   entities: FieldEntity[],
 ): FieldEntity[] => {
   let namePathSet: Set<FieldEntity> = new Set();
-  if (groupName) {
+  if (scopeName) {
     const nameList = entities.filter((item) =>
-      compareNamePath(item.getGroupNamePath(), groupName),
+      compareNamePath(item.getNamePath(), scopeName),
     );
     namePathSet = new Set(nameList);
   }
@@ -21,7 +21,7 @@ export const getFieldEntitiesByCollection = (
       });
     });
   }
-  if (!groupName && !nameList) {
+  if (!scopeName && !nameList) {
     namePathSet = new Set(entities);
   }
   return Array.from(namePathSet);

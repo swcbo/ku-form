@@ -9,11 +9,11 @@ const Form = forwardRef(
   <T extends Store = Store>(
     {
       form,
-      colon,
+      colon = true,
       children,
-      preserve,
-      editable,
-      disabled,
+      preserve = true,
+      editable = true,
+      disabled = false,
       initialValues,
       validateTrigger = 'onChange',
       onFinish,
@@ -51,7 +51,6 @@ const Form = forwardRef(
       (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         formInstance.resetFields();
-        otherProps.onReset?.(e);
       },
       [formInstance],
     );
@@ -61,6 +60,10 @@ const Form = forwardRef(
         <FormContext.Provider
           value={{
             ...internalFormInstance,
+            colon,
+            editable,
+            disabled,
+            preserve,
             validateTrigger,
           }}>
           {children}

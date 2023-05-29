@@ -1,6 +1,7 @@
 import { NamePath } from '../type';
 
-export const getNamePath = (path: NamePath) => {
+export const getNamePath = (path?: NamePath) => {
+  if (!path) return [];
   return toArray(path);
 };
 

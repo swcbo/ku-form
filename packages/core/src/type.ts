@@ -8,15 +8,15 @@ export type Store = Record<string, StoreValue>;
 
 export type NameCollection = {
   nameList?: NamePath[];
-  groupName?: NamePath;
+  scopeName?: NamePath;
   getStoreAll?: boolean; // 获取store里面的所有值
 };
 
-export type GroupMap = Record<
+export type ScopeMap = Record<
   string,
   {
     fieldPaths: NamePath[];
-    entity: GroupEntity;
+    entity: FieldEntity;
   }
 >;
 
@@ -74,7 +74,6 @@ export interface InternalHooks<T extends StoreValue = StoreValue> {
   setInitialValues: (values: T, init: boolean) => void;
   setPreserve: (preserve?: boolean) => void;
   getInitialValue: (namePath: InternalNamePath) => T;
-  registerGroup: (entity: GroupEntity) => () => void;
   setCallbacks: (callbacks: Callbacks<T>) => void;
   dispatch: (action: ReducerAction) => void;
 }
@@ -85,39 +84,17 @@ export interface InternalFormInstance<T extends StoreValue = StoreValue>
   validateTrigger?: string | string[];
 }
 
-// ================ basic =====================
-export interface FormBasicProps {
-  /** 是否编辑 默认true */
-  editable?: boolean;
-  disabled?: boolean;
-  colon?: boolean;
-  /** 当字段被删除时保留字段值 */
-  preserve?: boolean;
-}
-
-export interface FormBasicField {
-  name?: NamePath;
-  dependency?: Dependency[];
-}
-
 // ==================== props =================
 
-export interface FormGroup extends FormBasicField, FormBasicProps {
-  list: FormField[];
-  name: NamePath;
-}
-
-export interface FormField extends FormBasicField, FormBasicProps {
+export interface FormInternalField {
+  name?: NamePath;
+  dependency?: Dependency[];
   rules?: Rule[];
-  required?: boolean;
-  valuePropName?: string;
-  trigger?: string;
-  renderPreview?: (value: any) => React.ReactNode;
-  label?: React.ReactNode;
   initialValue?: any;
-  noStyle?: boolean;
-  field: string;
-  children?: ReactNode | ((props: ChildProps, form: FormInstance<Values>) => ReactNode);
+  list?: FormInternalField[];
+  children?:
+    | ReactNode
+    | ((props: FieldInjectProps, form: FormInstance<Values>) => ReactNode);
 }
 
 // ==================== dependency ====================
@@ -127,24 +104,20 @@ export interface Dependency {
 
 // ==================== entity ====================
 
-interface ChildProps {
+export interface FieldInjectProps {
   [name: string]: any;
 }
 
 export interface FieldEntity {
-  isFieldTouched: () => boolean;
-  getGroupNamePath: () => InternalNamePath | undefined;
-  getNamePath: () => InternalNamePath;
+  isFieldTouched?: () => boolean;
+  getNamePath: () => InternalNamePath | undefined;
   isPreserve: () => boolean | undefined;
-  validate: (options?: ValidateOptions) => Promise<ValidateErrorEntity>;
-  getMeta: () => Meta;
-  props: Pick<FormField, 'name' | 'rules' | 'dependency' | 'initialValue'>;
+  validate?: (options?: ValidateOptions) => Promise<ValidateErrorEntity>;
+  getMeta?: () => Meta;
+  props?: FormInternalField;
+  fieldType?: 'scope';
 }
 
-export interface GroupEntity {
-  getNamePath: () => InternalNamePath;
-  props: Pick<FormGroup, 'name' | 'dependency'>;
-}
 // ==================== value change ====================
 type ResetInfo = {
   type: 'reset';
