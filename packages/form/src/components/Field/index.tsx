@@ -6,20 +6,37 @@ import { getEventDefaultValue } from '@/utils/valueUtils';
 import { FieldInjectProps, getNamePath, StoreValue, toArray } from '@hedone/form-core';
 import { cloneElement, isValidElement, useContext, useEffect } from 'react';
 
-const Field = ({ children, ...props }: FieldProps) => {
+const Field = ({ children, fieldType, ...props }: FieldProps) => {
   const formContext = useContext(FormContext);
   const scopeContext = useContext(FieldContext);
-  const fieldInstance = useRefUpdate({
-    ...props,
+  const fieldOptions = {
     internalName: [...getNamePath(scopeContext.prefixName), ...getNamePath(props.name)],
     disabled:
       props.disabled ?? scopeContext.props.disabled ?? formContext.disabled ?? false,
     colon: formContext.colon ?? scopeContext.props.colon ?? props.colon ?? true,
-
+    editable:
+      props.editable ?? scopeContext.props.editable ?? formContext.editable ?? true,
+    preserve:
+      props.preserve ?? scopeContext.props.preserve ?? formContext.preserve ?? true,
+    validateTrigger:
+      props.validateTrigger ??
+      scopeContext.props.validateTrigger ??
+      formContext.validateTrigger ??
+      'onChange',
+  };
+  const fieldInstance = useRefUpdate({
+    ...props,
+    ...fieldOptions,
     mate: {
       touched: false,
     },
   });
+
+  const finalContext = Object.assign({}, scopeContext);
+  if (fieldType === 'scope') {
+    finalContext.prefixName = fieldInstance.current.internalName;
+    finalContext.props = fieldOptions;
+  }
 
   useEffect(() => {
     const internalHooks = formContext.getInternalHooks();
@@ -97,7 +114,10 @@ const Field = ({ children, ...props }: FieldProps) => {
   };
 
   return (
-    <FieldContext.Provider value={scopeContext}>
+    <FieldContext.Provider
+      value={{
+        ...scopeContext,
+      }}>
       <div className="form-field">{WrapperChild()}</div>
     </FieldContext.Provider>
   );

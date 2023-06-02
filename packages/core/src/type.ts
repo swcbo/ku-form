@@ -92,6 +92,7 @@ export interface FormInternalField {
   rules?: Rule[];
   initialValue?: any;
   list?: FormInternalField[];
+  fieldType?: 'scope';
   children?:
     | ReactNode
     | ((props: FieldInjectProps, form: FormInstance<Values>) => ReactNode);
@@ -115,7 +116,6 @@ export interface FieldEntity {
   validate?: (options?: ValidateOptions) => Promise<ValidateErrorEntity>;
   getMeta?: () => Meta;
   props?: FormInternalField;
-  fieldType?: 'scope';
 }
 
 // ==================== value change ====================

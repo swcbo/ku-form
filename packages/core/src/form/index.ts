@@ -38,7 +38,7 @@ class Form<T extends Store = Store> {
   };
 
   private registerField = (entity: FieldEntity) => {
-    const isScope = entity.fieldType === 'scope';
+    const isScope = entity.props?.fieldType === 'scope';
     if (isScope) {
       if (!entity.props?.name) {
         console.warn('Scope field must have a name.');
