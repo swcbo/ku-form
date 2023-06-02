@@ -14,7 +14,8 @@
     "clear": "docusaurus clear ./docs --config docusaurus.config.js",
     "serve": "docusaurus serve ./docs --config docusaurus.config.js",
     "write-translations": "docusaurus write-translations ./docs --config docusaurus.config.js",
-    "write-heading-ids": "docusaurus write-heading-ids ./docs --config docusaurus.config.js"
+    "write-heading-ids": "docusaurus write-heading-ids ./docs --config docusaurus.config.js",
+    "test": "vitest"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.3",
