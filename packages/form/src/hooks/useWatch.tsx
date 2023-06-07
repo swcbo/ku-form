@@ -1,15 +1,37 @@
-import { FormInstance, NamePath } from '@hedone/form-core/typings/type';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import FormContext from '../context/FormContext';
+import {
+  FormInstance,
+  InternalFormInstance,
+  NamePath,
+  StoreValue,
+  getNamePath,
+} from '@hedone/form-core';
+import useRefUpdate from './useRefUpdate';
 
 const useWatch = (
-  dependency: NamePath,
+  dependencies: NamePath,
   options?: {
     form: FormInstance;
   },
 ) => {
-  const [value, setValue] = useState();
-  const formContext = useContext(FormContext);
-  const from = options?.form || formContext;
+  const [value, setValue] = useState<StoreValue>();
+  const form = options?.form || useContext(FormContext);
+  const internalPath = getNamePath(dependencies);
+  const namePathRef = useRefUpdate(internalPath);
+  const oldValue = useRefUpdate(value);
+
+  useEffect(() => {
+    const { getInternalHooks, getFieldValue } = form as InternalFormInstance;
+    const { registerWatch } = getInternalHooks();
+
+    return registerWatch(() => {
+      const currentValue = getFieldValue(namePathRef.current);
+      if (oldValue.current !== currentValue) {
+        setValue(currentValue);
+      }
+    });
+  }, []);
+  return value;
 };
 export default useWatch;

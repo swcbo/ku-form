@@ -1,6 +1,4 @@
-// import { describe, it } from 'node:test';
 import { getNamePath } from '../../src/utils/typeUtils';
-// import { toArray } from '../../src/utils/typeUtils';
 
 describe('test case for getNamePath', () => {
   it('should return empty array when value is undefined', () => {

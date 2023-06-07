@@ -1,19 +1,18 @@
 type ISubscribeFunType<T> = (data: T) => void;
 class Observer<T> {
-  subs: { [key: string]: ISubscribeFunType<T> | undefined } = {};
+  #subs: Map<Symbol, ISubscribeFunType<T>> = new Map();
 
   dispatch = (state: T) => {
-    Object.keys(this.subs).forEach((key: string) => {
-      const fun = this.subs[key];
-      fun?.(state);
+    this.#subs.forEach((fun: ISubscribeFunType<T>) => {
+      fun(state);
     });
   };
 
   subscribe = (fun: ISubscribeFunType<T>) => {
-    const id = Object.keys(this.subs).length + 1;
-    this.subs[id] = fun;
+    const id = Symbol('subscribe');
+    this.#subs.set(id, fun);
     return () => {
-      this.subs[id] = undefined;
+      this.#subs.delete(id);
     };
   };
 }

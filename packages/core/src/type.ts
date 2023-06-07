@@ -68,7 +68,11 @@ export interface Callbacks<T> {
   onFinishFailed?: (errorInfo: ValidateErrorEntity<T>) => void;
 }
 // ============== internal =====================================
-
+export type WatchCallBack = (
+  values: Store,
+  allValues: Store,
+  namePathList: InternalNamePath[],
+) => void;
 export interface InternalHooks<T extends StoreValue = StoreValue> {
   registerField: (entity: FieldEntity) => () => void;
   setInitialValues: (values: T, init: boolean) => void;
@@ -76,6 +80,7 @@ export interface InternalHooks<T extends StoreValue = StoreValue> {
   getInitialValue: (namePath: InternalNamePath) => T;
   setCallbacks: (callbacks: Callbacks<T>) => void;
   dispatch: (action: ReducerAction) => void;
+  registerWatch: (callback: WatchCallBack) => void;
 }
 
 export interface InternalFormInstance<T extends StoreValue = StoreValue>
@@ -111,7 +116,7 @@ export interface FieldInjectProps {
 
 export interface FieldEntity {
   isFieldTouched?: () => boolean;
-  getNamePath: () => InternalNamePath | undefined;
+  getNamePath: () => InternalNamePath;
   isPreserve: () => boolean | undefined;
   validate?: (options?: ValidateOptions) => Promise<ValidateErrorEntity>;
   getMeta?: () => Meta;

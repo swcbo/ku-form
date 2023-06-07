@@ -10,7 +10,9 @@ const Field = ({ children, fieldType, ...props }: FieldProps) => {
   const formContext = useContext(FormContext);
   const scopeContext = useContext(FieldContext);
   const fieldOptions = {
-    internalName: [...getNamePath(scopeContext.prefixName), ...getNamePath(props.name)],
+    internalName: props.name
+      ? [...getNamePath(scopeContext.prefixName), ...getNamePath(props.name)]
+      : [],
     disabled:
       props.disabled ?? scopeContext.props.disabled ?? formContext.disabled ?? false,
     colon: formContext.colon ?? scopeContext.props.colon ?? props.colon ?? true,

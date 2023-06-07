@@ -1,3 +1,4 @@
+import { getNamePath } from './../utils/typeUtils';
 import { cloneDeep, merge, set } from 'lodash-es';
 import {
   FieldEntity,
@@ -13,11 +14,12 @@ import {
   StoreValue,
   UpdateAction,
   ValidateParams,
+  WatchCallBack,
 } from '../type';
 import { getFieldEntitiesByCollection } from '../utils/namePathUtils';
 import { getValue, setValue } from '../utils/valueUtils';
 import Observer from '../plugins/observer';
-import { getNamePath } from '../utils/typeUtils';
+import genProxy from '../plugins/proxy';
 
 class Form<T extends Store = Store> {
   #store: T = {} as T;
@@ -27,8 +29,13 @@ class Form<T extends Store = Store> {
   #observer = new Observer<ValueChangeParams<T>>();
   #preserve?: boolean;
   #callbacks: Callbacks<T> = {};
+  #watchMap: Map<Symbol, WatchCallBack> = new Map();
 
   // ============== init or register =======================
+
+  constructor() {
+    this.proxyStore(this.#store);
+  }
 
   private setInitialValues = (values: T, init?: boolean) => {
     this.#initialValues = values;
@@ -51,9 +58,20 @@ class Form<T extends Store = Store> {
       };
     } else {
       this.#fieldEntities.push(entity);
-      if (entity.props?.initialValue && entity.props?.name) {
-        this.setFieldValue(entity.props.name, entity.props.initialValue);
+      const namePath = entity.getNamePath();
+      if (namePath.length) {
+        if (entity.props?.initialValue) {
+          const formInitialValue = this.getInitialValue(namePath);
+          if (formInitialValue !== undefined) {
+            console.warn('Form already set initial value, field can not overwrite it.');
+          } else {
+            this.setFieldValue(namePath, entity.props.initialValue);
+          }
+        } else {
+          this.triggerWatch([namePath]);
+        }
       }
+
       return () => {
         this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
         if (!this.isMergedPreserve(entity.isPreserve())) {
@@ -68,10 +86,36 @@ class Form<T extends Store = Store> {
               info: { type: 'remove' },
               namePathList: [namePath],
             });
+            // this.triggerWatch([namePath]);
           }
         }
       };
     }
+  };
+
+  // ================= watch ==================
+
+  private registerWatch: InternalHooks['registerWatch'] = (callback) => {
+    const symbol = Symbol('watch');
+    this.#watchMap.set(symbol, callback);
+    return () => {
+      this.#watchMap.delete(symbol);
+    };
+  };
+
+  private triggerWatch = (namePathList: InternalNamePath[] = []) => {
+    if (this.#watchMap.size === 0) return;
+    const values = this.getFieldsValue();
+    const allValues = this.getFieldsValue({
+      getStoreAll: true,
+    });
+    this.#watchMap.forEach((callback) => {
+      callback(values, allValues, namePathList);
+    });
+  };
+
+  private proxyStore = (store: T) => {
+    this.#store = genProxy(store, this.triggerWatch);
   };
 
   // =================== get hooks  ===================
@@ -106,6 +150,7 @@ class Form<T extends Store = Store> {
       setPreserve: this.setPreserve,
       dispatch: this.dispatch,
       setCallbacks: this.setCallbacks,
+      registerWatch: this.registerWatch,
     };
   };
 
@@ -130,7 +175,8 @@ class Form<T extends Store = Store> {
   // =================== update form ===================
 
   private updateStore = (nextStore: T) => {
-    this.#store = nextStore;
+    this.proxyStore(nextStore);
+    // this.#store = nextStore;
   };
 
   private setCallbacks = (callbacks: Callbacks<T>) => {
@@ -149,7 +195,7 @@ class Form<T extends Store = Store> {
     const namePath = getNamePath(name);
     const prevStore = cloneDeep(this.#store);
     set(this.#store, namePath, value);
-
+    // this.triggerWatch([namePath]);
     this.#observer.dispatch({
       prevStore,
       info: { type: 'valueUpdate', source: 'internal' },
@@ -170,7 +216,7 @@ class Form<T extends Store = Store> {
   private getFieldValue = (name: NamePath) => getValue(this.#store, name);
 
   private getFieldsValue = (nameCollection?: NameCollection) => {
-    if (!nameCollection?.getStoreAll) {
+    if (nameCollection?.getStoreAll) {
       return this.#store;
     }
     const entityList = nameCollection
@@ -203,25 +249,29 @@ class Form<T extends Store = Store> {
         source: 'external',
       },
     });
+    this.triggerWatch();
   };
 
   private resetFields = (nameCollection?: Omit<NameCollection, 'getStoreAll'>) => {
     const prevStore = cloneDeep(this.#store);
-    const entityList = getFieldEntitiesByCollection(nameCollection, this.#fieldEntities);
-    entityList.forEach(({ getNamePath: getName }) => {
-      const name = getName();
+    const nameList = getFieldEntitiesByCollection(
+      nameCollection,
+      this.#fieldEntities,
+    ).map(({ getNamePath }) => getNamePath());
+    nameList.forEach((name) => {
       if (name) {
+        this.updateStore(set(this.#store, name, this.getInitialValue(name)));
       }
     });
     this.#observer.dispatch({
       prevStore,
       info: { type: 'reset' },
-      namePathList: entityList.reduce<NamePath[]>((pre, { getNamePath }) => {
-        const name = getNamePath();
+      namePathList: nameList.reduce<NamePath[]>((pre, name) => {
         if (!name) return pre;
         return [...pre, name];
       }, []),
     });
+    this.triggerWatch(nameList);
   };
 
   private isFieldsTouched = (nameCollection?: Omit<NameCollection, 'getStoreAll'>) => {
