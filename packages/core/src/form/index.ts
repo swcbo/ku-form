@@ -33,7 +33,14 @@ class Form<T extends Store = Store> {
 
   // ============== init or register =======================
 
-  constructor() {
+  constructor(initialValues?: T) {
+    if (initialValues) {
+      if (typeof initialValues === 'object') {
+        this.setInitialValues(initialValues, true);
+      } else {
+        console.warn('initialValues must be an Object.');
+      }
+    }
     this.proxyStore(this.#store);
   }
 
