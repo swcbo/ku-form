@@ -36,18 +36,20 @@ class Form<T extends Store = Store> {
   constructor(initialValues?: T) {
     if (initialValues) {
       if (typeof initialValues === 'object') {
-        this.setInitialValues(initialValues, true);
+        this.updateStore(cloneDeep(initialValues));
       } else {
         console.warn('initialValues must be an Object.');
       }
+    } else {
+      this.proxyStore(this.#store);
     }
-    this.proxyStore(this.#store);
   }
 
   private setInitialValues = (values: T, init?: boolean) => {
     this.#initialValues = values;
     if (init) {
       this.updateStore(cloneDeep(values));
+      this.triggerWatch();
     }
   };
 
@@ -183,7 +185,6 @@ class Form<T extends Store = Store> {
 
   private updateStore = (nextStore: T) => {
     this.proxyStore(nextStore);
-    // this.#store = nextStore;
   };
 
   private setCallbacks = (callbacks: Callbacks<T>) => {
@@ -248,7 +249,7 @@ class Form<T extends Store = Store> {
 
   private setFieldsValue = (value: Partial<T>) => {
     const prevStore = cloneDeep(this.#store);
-    this.#store = merge({}, this.#store, value);
+    this.updateStore(merge(this.#store, value));
     this.#observer.dispatch({
       prevStore,
       info: {
