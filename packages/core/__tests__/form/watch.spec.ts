@@ -54,7 +54,6 @@ describe('test case for form watch trigger', () => {
       expect(watch).toHaveBeenCalledTimes(1);
     }
   });
-  // form 存在 initValue  并且field 也存在 initValue 时, watch 只触发一次
   test('should trigger once watch when initValue and field initValue', () => {
     const watch = vi.fn(() => {});
     if (form) {
@@ -76,7 +75,7 @@ describe('test case for form watch trigger', () => {
 
 describe('test case for form watch data', () => {
   /** 检查触发watch之后数据是否正确 */
-  it('should data is right watch when setFieldValue', () => {
+  test('should data is right watch when setFieldValue', () => {
     const watch = vi.fn(
       (store: Store, allStore: Store, namePathList: InternalNamePath[]) => {
         return {

@@ -249,7 +249,7 @@ class Form<T extends Store = Store> {
 
   private setFieldsValue = (value: Partial<T>) => {
     const prevStore = cloneDeep(this.#store);
-    this.updateStore(merge(this.#store, value));
+    this.updateStore(merge(prevStore, value));
     this.#observer.dispatch({
       prevStore,
       info: {
