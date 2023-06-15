@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -fr typings && rm -fr lib  && vite build & tsc -p tsconfig.type.json"
+    "build": "rm -fr typings && rm -fr lib  && vite build && tsc -p tsconfig.type.json"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.7",

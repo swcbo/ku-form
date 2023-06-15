@@ -45,11 +45,13 @@ class Form<T extends Store = Store> {
     }
   }
 
-  private setInitialValues = (values: T, init?: boolean) => {
-    this.#initialValues = values;
-    if (init) {
-      this.updateStore(cloneDeep(values));
-      this.triggerWatch();
+  private setInitialValues = (values?: T, init?: boolean) => {
+    if (values) {
+      this.#initialValues = values;
+      if (init) {
+        this.updateStore(cloneDeep(values));
+        this.triggerWatch();
+      }
     }
   };
 

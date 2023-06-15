@@ -18,6 +18,7 @@ export interface FormProps<T extends Store = Store>
   initialValues?: Partial<T>;
   onValuesChange?: (changedValues: Partial<T>, values: T) => void;
   form?: FormInstance<T>;
+  Component?: string;
   children?: ReactNode;
 }
 

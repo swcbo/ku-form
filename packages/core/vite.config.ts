@@ -6,7 +6,7 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       name: packageJSON.name,
-      fileName: 'index.js',
+      fileName: 'index',
     },
     rollupOptions: {
       output: [

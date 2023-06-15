@@ -1,12 +1,9 @@
-import { useEffect, useRef } from 'react';
-
-/* This code acts as a hook that runs a function once the component is initialized. */
-
+import { useRef } from 'react';
 const useInitFun = (fun: (init: boolean) => void) => {
-  const isInit = useRef(false);
+  const isInit = useRef(true);
   fun(isInit.current);
-  if (!isInit.current) {
-    isInit.current = true;
+  if (isInit.current) {
+    isInit.current = false;
   }
 };
 export default useInitFun;

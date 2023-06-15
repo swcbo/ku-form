@@ -17,6 +17,7 @@ const useWatch = (
 ) => {
   const [value, setValue] = useState<StoreValue>();
   const form = options?.form || useContext(FormContext);
+
   const internalPath = getNamePath(dependencies);
   const namePathRef = useRefUpdate(internalPath);
   const oldValue = useRefUpdate(value);
@@ -24,13 +25,14 @@ const useWatch = (
   useEffect(() => {
     const { getInternalHooks, getFieldValue } = form as InternalFormInstance;
     const { registerWatch } = getInternalHooks();
-
-    return registerWatch(() => {
+    const cancelWatch = registerWatch(() => {
       const currentValue = getFieldValue(namePathRef.current);
       if (oldValue.current !== currentValue) {
         setValue(currentValue);
       }
     });
+    setValue(getFieldValue(namePathRef.current));
+    return cancelWatch;
   }, []);
   return value;
 };

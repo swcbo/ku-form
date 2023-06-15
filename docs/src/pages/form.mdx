@@ -1,5 +1,19 @@
-import Form from '@hedone/form';
-<Form />;
+import From from '@hedone/form';
+export const Highlight = ({ children, color }) => (
+  <span
+    style={{
+      backgroundColor: color,
+      borderRadius: '2px',
+      color: '#fff',
+      padding: '0.2rem',
+    }}>
+    {children}
+  </span>
+);
+
+<Highlight color="#25c2a0">Docusaurus green</Highlight> and <Highlight color="#1877F2">
+  Facebook blue
+</Highlight>
 
 # My Markdown page
 

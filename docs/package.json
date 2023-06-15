@@ -1,0 +1,38 @@
+{
+  "name": "@hedone/form-docs",
+  "version": "1.0.0",
+  "description": "form docs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docusaurus": "docusaurus",
+    "start:docs": "docusaurus start --config docusaurus.config.js",
+    "build:docs": "docusaurus build  --config docusaurus.config.js",
+    "swizzle": "docusaurus swizzle --config docusaurus.config.js",
+    "deploy": "docusaurus deploy  --config docusaurus.config.js",
+    "clear": "docusaurus clear  --config docusaurus.config.js",
+    "serve": "docusaurus serve  --config docusaurus.config.js",
+    "write-translations": "docusaurus write-translations  --config docusaurus.config.js",
+    "write-heading-ids": "docusaurus write-heading-ids  --config docusaurus.config.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tsconfig/docusaurus": "^1.0.5",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "eslint": "*",
+    "typescript": "*"
+  },
+  "dependencies": {
+    "react": "*",
+    "@hedone/form": "workspace:*",
+    "@docusaurus/core": "2.4.1",
+    "@docusaurus/module-type-aliases": "2.4.1",
+    "@docusaurus/plugin-client-redirects": "^2.4.1",
+    "@docusaurus/preset-classic": "2.4.1",
+    "@docusaurus/theme-classic": "^2.4.1",
+    "@docusaurus/types": "^2.4.1"
+  }
+}
