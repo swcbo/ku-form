@@ -76,6 +76,19 @@ Learn more about the power of Turborepo:
 - [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
 - [Caching](https://turbo.build/repo/docs/core-concepts/caching)
 - [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
+- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)Â
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+
+## Commit Message
+
+- chore: build process or auxiliary tool changes (构建程序或辅助工具的变动)
+- docs: update documentation (更新文档)
+- feat: Add or modify features (新增或者修改功能)
+- fix: bug fix (修复 bug)
+- refactor: code refactor (代码重构,即非新增功能，也非修改bug的代码变动)
+- style: code style changes (仅限代码格式修改, white-space, formatting, missing semi colons, etc)
+- ci: update ci (CI 配置文件和脚本的更新)
+- perf: code performance improvements (代码提升性能)
+- revert: revert to a commit (回滚到某个版本)
+- test: add or modify tests cases (新增或者修改测试用例)
