@@ -10,8 +10,6 @@
     "declarationMap": false,
     "declaration": true,
     "declarationDir": "./typings",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "jsx": "react-jsx"
   }
 }

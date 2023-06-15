@@ -1,5 +1,5 @@
-import { FormContextStore } from '@/types/form';
 import { createContext } from 'react';
+import { FormContextStore } from '../../types/form';
 const warningFunc = () => {
   console.warn('Can not find FormContext');
 };

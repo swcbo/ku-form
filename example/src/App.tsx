@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './App.css';
-import Form, { useForm, useWatch } from '@hedone/form';
+import Form, { FormField, useForm, useWatch } from '@hedone/form';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -9,7 +9,11 @@ function App() {
   console.log(form, 'form', name);
   return (
     <>
-      <Form>312312</Form>
+      <Form form={form} initialValues={{ name: '筱白' }}>
+        <FormField name="name">
+          <input placeholder="请输入问题" />
+        </FormField>
+      </Form>
       <div
         onClick={() => {
           console.log(form.getFieldValue('name'), 'form.getFieldsValue()');

@@ -22,9 +22,6 @@
     "jsx": "react-jsx",
     "declarationDir": "./typings",
     "lib": ["es6", "dom"], // 导入库类型定义
-    "types": ["node"],
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "types": ["node"]
   }
 }

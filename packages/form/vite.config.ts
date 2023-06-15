@@ -1,17 +1,12 @@
 import { defineConfig } from 'vite';
 import packageJSON from './package.json';
-import path from 'path';
 const OutPutConfig = {
   globals: {
     react: 'react',
+    'react/jsx-runtime': 'jsxRuntime',
   },
 };
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-    },
-  },
   build: {
     sourcemap: false,
     outDir: 'lib',
@@ -21,13 +16,12 @@ export default defineConfig({
       fileName: 'index',
       formats: ['es', 'umd', 'cjs'],
     },
-
     rollupOptions: {
       output: {
         exports: 'named',
         globals: OutPutConfig.globals,
       },
-      external: ['react'],
+      external: ['react', 'react/jsx-runtime'],
     },
   },
 });

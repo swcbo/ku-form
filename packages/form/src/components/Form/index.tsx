@@ -1,7 +1,7 @@
-import FormContext from '@/context/FormContext';
-import useForm from '@/hooks/useForm';
-import useInitFun from '@/hooks/useInit';
-import { FormProps, FormRef } from '@/types/form';
+import FormContext from '../../context/FormContext';
+import useForm from '../../hooks/useForm';
+import useInitFun from '../../hooks/useInit';
+import { FormProps, FormRef } from '../../types/form';
 import { InternalFormInstance, Store } from '@hedone/form-core';
 import { forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
 
@@ -77,11 +77,6 @@ export const Form = <T extends Store = Store>(
   );
 };
 const WrapperForm = forwardRef(Form) as <T extends Store>(
-  props: FormProps<T>,
-  ref: React.Ref<FormRef>,
-) => ReturnType<typeof Form>;
+  props: FormProps<T> & { ref?: React.Ref<FormRef> },
+) => React.ReactElement;
 export default WrapperForm;
-
-// const renderForm = () => {
-//   return <Form initialValues={}></Form>;
-// };
