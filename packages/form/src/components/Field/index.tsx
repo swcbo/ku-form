@@ -57,7 +57,7 @@ const Field = ({
       isPreserve: () => fieldInstance.current.preserve,
       onStoreChange: (action) => {
         const { info, namePathList, prevStore } = action;
-        const { internalName } = fieldInstance.current;
+        const { internalName, onReset } = fieldInstance.current;
         const prevValue = getValue(prevStore, internalName);
         const curValue = formContext.getFieldValue(internalName);
         const namePathMatch =
@@ -80,6 +80,7 @@ const Field = ({
             if ((!namePathList || namePathMatch) && valueChange) {
               mate.current.touched = false;
               update();
+              onReset?.();
             }
             break;
         }
@@ -139,7 +140,6 @@ const Field = ({
     });
 
     const isFunction = typeof children === 'function';
-
     if (isFunction) {
       return children(control, formContext);
     } else if (isValidElement(children)) {

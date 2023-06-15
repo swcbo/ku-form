@@ -50,6 +50,7 @@ export const Form = <T extends Store = Store>(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       formInstance.resetFields();
+      otherProps.onReset?.(e);
     },
     [formInstance],
   );

@@ -12,7 +12,7 @@ export interface FormContextStore extends InternalFormInstance, FormBasicProps {
 
 export interface FormProps<T extends Store = Store>
   extends FormBasicProps,
-    Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit' | 'children' | 'onReset'>,
+    Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit' | 'children'>,
     Callbacks<T> {
   layout?: 'horizontal' | 'vertical' | 'inline';
   initialValues?: Partial<T>;

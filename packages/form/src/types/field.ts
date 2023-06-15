@@ -12,6 +12,7 @@ export interface FieldProps extends FormInternalField, FormBasicProps {
   onValueChange?: (value: any) => void;
   getValueFromEvent?: (...args: EventArgs) => StoreValue;
   normalize?: (value: StoreValue, prevValue: StoreValue, allValues: Store) => any;
+  onReset?: () => void;
 }
 export interface FieldInstance {
   prefixName?: NamePath;
