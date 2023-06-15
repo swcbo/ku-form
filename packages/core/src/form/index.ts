@@ -82,22 +82,23 @@ class Form<T extends Store = Store> {
           this.triggerWatch([namePath]);
         }
       }
+      const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
 
       return () => {
         this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
+        unSubscribe();
         if (!this.isMergedPreserve(entity.isPreserve())) {
           const namePath = entity.getNamePath();
           if (namePath) {
             const defaultValue = this.getInitialValue(namePath);
-            const prevStore = cloneDeep(this.#store);
-            this.setFieldValue(namePath, undefined);
+            // const prevStore = cloneDeep(this.#store);
+            // this.setFieldValue(namePath, undefined);
             set(this.#store, namePath, defaultValue);
-            this.#observer.dispatch({
-              prevStore,
-              info: { type: 'remove' },
-              namePathList: [namePath],
-            });
-            // this.triggerWatch([namePath]);
+            // this.#observer.dispatch({
+            //   prevStore,
+            //   info: { type: 'remove' },
+            //   namePathList: [namePath],
+            // });
           }
         }
       };
@@ -205,7 +206,6 @@ class Form<T extends Store = Store> {
     const namePath = getNamePath(name);
     const prevStore = cloneDeep(this.#store);
     set(this.#store, namePath, value);
-    // this.triggerWatch([namePath]);
     this.#observer.dispatch({
       prevStore,
       info: { type: 'valueUpdate', source: 'internal' },
@@ -217,8 +217,6 @@ class Form<T extends Store = Store> {
       const changedValues = getValue(this.#store, namePath);
       onValuesChange(changedValues, this.getFieldsValue() as T, source);
     }
-
-    // this.triggerOnFieldsChange([namePath, ...childrenFields]);
   };
 
   // =================== field  ===================
@@ -241,6 +239,7 @@ class Form<T extends Store = Store> {
 
   private setFieldValue = (name: NamePath, value: StoreValue) => {
     const prevStore = cloneDeep(this.#store);
+
     setValue(this.#store, name, value);
     this.#observer.dispatch({
       prevStore,
@@ -251,7 +250,7 @@ class Form<T extends Store = Store> {
 
   private setFieldsValue = (value: Partial<T>) => {
     const prevStore = cloneDeep(this.#store);
-    this.updateStore(merge(prevStore, value));
+    this.updateStore(merge({}, prevStore, value));
     this.#observer.dispatch({
       prevStore,
       info: {

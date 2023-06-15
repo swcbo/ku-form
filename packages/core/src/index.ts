@@ -1,3 +1,4 @@
+import { getValue, setValue } from './utils/valueUtils';
 import { getNamePath, toArray } from './utils/typeUtils';
 import {
   Store,
@@ -12,7 +13,7 @@ import {
   InternalHooks,
 } from './type';
 import Form from './form';
-export { getNamePath, toArray };
+export { getNamePath, toArray, getValue, setValue };
 
 export type {
   Store,

@@ -1,5 +1,6 @@
 import { Rule, Values } from 'async-validator';
 import { ReactNode } from 'react';
+import { ISubscribeFunType } from './plugins/observer';
 export type InternalNamePath = (string | number)[];
 export type NamePath = string | number | InternalNamePath;
 
@@ -115,6 +116,7 @@ export interface FieldInjectProps {
 }
 
 export interface FieldEntity {
+  onStoreChange: ISubscribeFunType<ValueChangeParams<Store>>;
   isFieldTouched?: () => boolean;
   getNamePath: () => InternalNamePath;
   isPreserve: () => boolean | undefined;

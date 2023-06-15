@@ -1,14 +1,19 @@
+import useForceUpdate from '../../hooks/useForceUpdate';
 import FieldContext from '../../context/FieldContext';
 import FormContext from '../../context/FormContext';
 import useRefUpdate from '../../hooks/useRefUpdate';
 import { EventArgs, FieldProps } from '../../types/field';
 import { getEventDefaultValue } from '../../utils/valueUtils';
 import { FieldInjectProps, getNamePath, StoreValue, toArray } from '@hedone/form-core';
-import { cloneElement, isValidElement, useContext, useEffect } from 'react';
+import { cloneElement, isValidElement, useContext, useEffect, useRef } from 'react';
+import { containsNamePath } from '../../plugins/namePathUtils';
+import { getValue } from '@hedone/form-core';
 
 const Field = ({ children, fieldType, ...props }: FieldProps) => {
   const formContext = useContext(FormContext);
   const scopeContext = useContext(FieldContext);
+  const [update] = useForceUpdate();
+  const { dispatch, registerField } = formContext.getInternalHooks();
   const fieldOptions = {
     internalName: props.name
       ? [...getNamePath(scopeContext.prefixName), ...getNamePath(props.name)]
@@ -29,9 +34,9 @@ const Field = ({ children, fieldType, ...props }: FieldProps) => {
   const fieldInstance = useRefUpdate({
     ...props,
     ...fieldOptions,
-    mate: {
-      touched: false,
-    },
+  });
+  const mate = useRef({
+    touched: false,
   });
 
   const finalContext = Object.assign({}, scopeContext);
@@ -41,19 +46,47 @@ const Field = ({ children, fieldType, ...props }: FieldProps) => {
   }
 
   useEffect(() => {
-    const internalHooks = formContext.getInternalHooks();
-    return internalHooks.registerField({
-      isFieldTouched: () => fieldInstance.current.mate.touched,
+    return registerField({
+      isFieldTouched: () => {
+        return mate.current.touched;
+      },
       getNamePath: () => fieldInstance.current.internalName,
       isPreserve: () => fieldInstance.current.preserve,
-      // validate,
+      onStoreChange: (action) => {
+        const { info, namePathList, prevStore } = action;
+        const { internalName } = fieldInstance.current;
+        const prevValue = getValue(prevStore, internalName);
+        const curValue = formContext.getFieldValue(internalName);
+        const namePathMatch =
+          namePathList && containsNamePath(namePathList, internalName);
+        const valueChange = prevValue !== curValue;
+        switch (info.type) {
+          case 'clearValidate':
+            break;
+          case 'valueUpdate':
+            if ((!namePathList || namePathMatch) && valueChange) {
+              mate.current.touched = true;
+              update();
+            }
+            break;
+          case 'dependenciesUpdate':
+            break;
+          case 'validate':
+            break;
+          case 'reset':
+            if ((!namePathList || namePathMatch) && valueChange) {
+              mate.current.touched = false;
+              update();
+            }
+            break;
+        }
+      },
       props: fieldInstance.current,
     });
   }, []);
 
   const WrapperChild = () => {
     const {
-      mate,
       rules,
       normalize,
       internalName,
@@ -62,7 +95,7 @@ const Field = ({ children, fieldType, ...props }: FieldProps) => {
       valuePropName = 'value',
       getValueFromEvent,
     } = fieldInstance.current;
-    const { dispatch } = formContext.getInternalHooks();
+
     const value = formContext.getFieldValue(internalName);
     const control: FieldInjectProps = {
       ...props,
@@ -71,7 +104,6 @@ const Field = ({ children, fieldType, ...props }: FieldProps) => {
     /** proxy trigger */
     const originTrigger = control[trigger];
     control[trigger] = (...args: EventArgs) => {
-      mate.touched = true;
       let currentValue: StoreValue;
       if (getValueFromEvent) {
         currentValue = getValueFromEvent(...args);

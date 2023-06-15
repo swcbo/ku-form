@@ -1,8 +1,9 @@
 {
   "name": "@hedone/form-core",
   "version": "0.0.1",
-  "main": "src/index.ts",
-  "types": "typings/index.d.ts",
+  "module": "src/index.ts",
+  "type": "module",
+  "types": "src/index.ts",
   "license": "MIT",
   "publishConfig": {
     "main": "lib/cjs/index.js",

@@ -1,5 +1,7 @@
-type ISubscribeFunType<T> = (data: T) => void;
-class Observer<T> {
+import { Store } from '..';
+
+export type ISubscribeFunType<T> = (data: T) => void;
+class Observer<T extends Store = Store> {
   #subs: Map<Symbol, ISubscribeFunType<T>> = new Map();
 
   dispatch = (state: T) => {
