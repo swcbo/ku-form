@@ -1,5 +1,5 @@
 import { getNamePath } from './../utils/typeUtils';
-import { cloneDeep, merge, set } from 'lodash-es';
+import { cloneDeep, merge, omit, set } from 'lodash-es';
 import {
   FieldEntity,
   NamePath,
@@ -91,14 +91,11 @@ class Form<T extends Store = Store> {
           const namePath = entity.getNamePath();
           if (namePath) {
             const defaultValue = this.getInitialValue(namePath);
-            // const prevStore = cloneDeep(this.#store);
-            // this.setFieldValue(namePath, undefined);
-            set(this.#store, namePath, defaultValue);
-            // this.#observer.dispatch({
-            //   prevStore,
-            //   info: { type: 'remove' },
-            //   namePathList: [namePath],
-            // });
+            if (defaultValue) {
+              set(this.#store, namePath, defaultValue);
+            } else {
+              this.updateStore(omit(this.#store, namePath) as T);
+            }
           }
         }
       };
@@ -138,7 +135,7 @@ class Form<T extends Store = Store> {
   };
 
   private isMergedPreserve = (fieldPreserve?: boolean) => {
-    const mergedPreserve = fieldPreserve !== undefined ? fieldPreserve : this.#preserve;
+    const mergedPreserve = fieldPreserve ?? this.#preserve;
     return mergedPreserve ?? true;
   };
 

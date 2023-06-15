@@ -3,7 +3,7 @@ import useForm from '../../hooks/useForm';
 import useInitFun from '../../hooks/useInit';
 import { FormProps, FormRef } from '../../types/form';
 import { InternalFormInstance, Store } from '@hedone/form-core';
-import { forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
+import { forwardRef, memo, useCallback, useImperativeHandle, useMemo } from 'react';
 
 export const Form = <T extends Store = Store>(
   {
@@ -53,9 +53,8 @@ export const Form = <T extends Store = Store>(
     },
     [formInstance],
   );
-
-  const wrapperChildren = useMemo(() => {
-    return (
+  return (
+    <form {...otherProps} onSubmit={onSubmit} onReset={onReset}>
       <FormContext.Provider
         value={{
           ...internalFormInstance,
@@ -67,16 +66,10 @@ export const Form = <T extends Store = Store>(
         }}>
         {children}
       </FormContext.Provider>
-    );
-  }, [formInstance, validateTrigger]);
-
-  return (
-    <form {...otherProps} onSubmit={onSubmit} onReset={onReset}>
-      {wrapperChildren}
     </form>
   );
 };
 const WrapperForm = forwardRef(Form) as <T extends Store>(
   props: FormProps<T> & { ref?: React.Ref<FormRef> },
 ) => React.ReactElement;
-export default WrapperForm;
+export default memo(WrapperForm);

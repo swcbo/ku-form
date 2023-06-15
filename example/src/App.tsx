@@ -1,25 +1,32 @@
 import Form, { FormField, useForm, useWatch } from '@hedone/form';
 import './App.css';
+import { useState } from 'react';
 
 function App() {
   const [form] = useForm();
+  const [show, setShow] = useState(true);
   const name = useWatch(['name'], { form });
-  console.log(form, 'form', name);
+  console.log(form, 'form', name, show);
   return (
     <>
       <Form form={form} initialValues={{ name: '筱白' }}>
-        <FormField name="name">
-          <input placeholder="请输入问题" />
-        </FormField>
+        {show ? (
+          <FormField name="name" preserve={false}>
+            <input placeholder="请输入问题" />
+          </FormField>
+        ) : (
+          <>321321</>
+        )}
       </Form>
       <div
         onClick={() => {
-          console.log(
-            form.getFieldsValue({
-              getStoreAll: true,
-            }),
-            'form.getFieldsValue()',
-          );
+          setShow(!show);
+        }}>
+        显示隐藏
+      </div>
+      <div
+        onClick={() => {
+          console.log(form.getFieldsValue(), 'form.getFieldsValue()');
         }}>
         点击获取数据
       </div>

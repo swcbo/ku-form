@@ -5,11 +5,19 @@ import useRefUpdate from '../../hooks/useRefUpdate';
 import { EventArgs, FieldProps } from '../../types/field';
 import { getEventDefaultValue } from '../../utils/valueUtils';
 import { FieldInjectProps, getNamePath, StoreValue, toArray } from '@hedone/form-core';
-import { cloneElement, isValidElement, useContext, useEffect, useRef } from 'react';
+import { cloneElement, isValidElement, memo, useContext, useEffect, useRef } from 'react';
 import { containsNamePath } from '../../plugins/namePathUtils';
 import { getValue } from '@hedone/form-core';
 
-const Field = ({ children, fieldType, ...props }: FieldProps) => {
+const Field = ({
+  children,
+  fieldType,
+  preserve,
+  disabled,
+  editable,
+  validateTrigger,
+  ...props
+}: FieldProps) => {
   const formContext = useContext(FormContext);
   const scopeContext = useContext(FieldContext);
   const [update] = useForceUpdate();
@@ -18,15 +26,12 @@ const Field = ({ children, fieldType, ...props }: FieldProps) => {
     internalName: props.name
       ? [...getNamePath(scopeContext.prefixName), ...getNamePath(props.name)]
       : [],
-    disabled:
-      props.disabled ?? scopeContext.props.disabled ?? formContext.disabled ?? false,
+    disabled: disabled ?? scopeContext.props.disabled ?? formContext.disabled ?? false,
     colon: formContext.colon ?? scopeContext.props.colon ?? props.colon ?? true,
-    editable:
-      props.editable ?? scopeContext.props.editable ?? formContext.editable ?? true,
-    preserve:
-      props.preserve ?? scopeContext.props.preserve ?? formContext.preserve ?? true,
+    editable: editable ?? scopeContext.props.editable ?? formContext.editable ?? true,
+    preserve: preserve ?? scopeContext.props.preserve ?? formContext.preserve ?? true,
     validateTrigger:
-      props.validateTrigger ??
+      validateTrigger ??
       scopeContext.props.validateTrigger ??
       formContext.validateTrigger ??
       'onChange',
@@ -47,9 +52,7 @@ const Field = ({ children, fieldType, ...props }: FieldProps) => {
 
   useEffect(() => {
     return registerField({
-      isFieldTouched: () => {
-        return mate.current.touched;
-      },
+      isFieldTouched: () => mate.current.touched,
       getNamePath: () => fieldInstance.current.internalName,
       isPreserve: () => fieldInstance.current.preserve,
       onStoreChange: (action) => {
@@ -156,4 +159,4 @@ const Field = ({ children, fieldType, ...props }: FieldProps) => {
     </FieldContext.Provider>
   );
 };
-export default Field;
+export default memo(Field);
