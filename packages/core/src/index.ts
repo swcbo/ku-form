@@ -1,30 +1,17 @@
-import { getValue, setValue } from './utils/valueUtils';
-import { getNamePath, toArray } from './utils/typeUtils';
-import {
-  Store,
-  NamePath,
-  Callbacks,
-  StoreValue,
-  FormInstance,
-  InternalNamePath,
-  InternalFormInstance,
-  FormInternalField,
-  FieldInjectProps,
-  InternalHooks,
-} from './type';
 import Form from './form';
-export { getNamePath, toArray, getValue, setValue };
-
+export { getValue, setValue } from './utils/valueUtils';
+export { getNamePath, toArray } from './utils/typeUtils';
 export type {
-  Store,
-  NamePath,
-  Callbacks,
-  StoreValue,
-  FormInstance,
-  InternalHooks,
-  InternalNamePath,
-  FieldInjectProps,
-  FormInternalField,
-  InternalFormInstance,
-};
+	Store,
+	NamePath,
+	Callbacks,
+	StoreValue,
+	FormInstance,
+	InternalNamePath,
+	InternalFormInstance,
+	FormInternalField,
+	FieldInjectProps,
+	InternalHooks,
+} from './type';
+
 export default Form;
