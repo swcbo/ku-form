@@ -27,15 +27,14 @@
     "@hedone/form-core": "workspace:*"
   },
   "devDependencies": {
+    "@types/react": "*",
+    "@types/react-dom": "*",
     "tsconfig": "workspace:*",
+    "typescript": "*",
     "vite": "*"
   },
   "peerDependencies": {
-    "@types/react": "*",
-    "@types/react-dom": "*",
-    "eslint": "*",
-    "react": "*",
-    "typescript": "*"
+    "react": "*"
   },
   "engines": {
     "node": ">=16.0.0"

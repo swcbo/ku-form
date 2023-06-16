@@ -12,7 +12,9 @@ function App() {
       <Form form={form} onFinish={console.log} onReset={console.log}>
         {show ? (
           <FormField name={['user', 'name']} preserve={false}>
-            <input placeholder="请输入问题" defaultValue="" />
+            {({ onChange, value = '' }) => {
+              return <input placeholder="请输入问题" value={value} onChange={onChange} />;
+            }}
           </FormField>
         ) : (
           <>321321</>

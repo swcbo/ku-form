@@ -4,10 +4,15 @@ import FormContext from '../../context/FormContext';
 import useRefUpdate from '../../hooks/useRefUpdate';
 import { EventArgs, FieldProps } from '../../types/field';
 import { getEventDefaultValue } from '../../utils/valueUtils';
-import { FieldInjectProps, getNamePath, StoreValue, toArray } from '@hedone/form-core';
+import {
+  FieldInjectProps,
+  getNamePath,
+  StoreValue,
+  toArray,
+  getValue,
+} from '@hedone/form-core';
 import { cloneElement, isValidElement, memo, useContext, useEffect, useRef } from 'react';
 import { containsNamePath } from '../../plugins/namePathUtils';
-import { getValue } from '@hedone/form-core';
 
 const Field = ({
   children,
@@ -101,6 +106,7 @@ const Field = ({
     } = fieldInstance.current;
 
     const value = formContext.getFieldValue(internalName);
+
     const control: FieldInjectProps = {
       ...props,
       [valuePropName]: value,
@@ -138,7 +144,6 @@ const Field = ({
         }
       };
     });
-
     const isFunction = typeof children === 'function';
     if (isFunction) {
       return children(control, formContext);

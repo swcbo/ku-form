@@ -3,7 +3,7 @@ import useForm from '../../hooks/useForm';
 import useInitFun from '../../hooks/useInit';
 import { FormProps, FormRef } from '../../types/form';
 import { InternalFormInstance, Store } from '@hedone/form-core';
-import { forwardRef, memo, useCallback, useImperativeHandle, useMemo } from 'react';
+import { forwardRef, memo, useCallback, useImperativeHandle } from 'react';
 
 export const Form = <T extends Store = Store>(
   {

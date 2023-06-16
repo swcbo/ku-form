@@ -21,7 +21,6 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.7",
-    "eslint": "*",
     "tsconfig": "workspace:*",
     "typescript": "*",
     "vite": "*"
