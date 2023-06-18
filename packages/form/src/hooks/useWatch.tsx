@@ -12,11 +12,12 @@ import useRefUpdate from './useRefUpdate';
 const useWatch = (
 	dependencies: NamePath,
 	options?: {
-    form: FormInstance;
-  },
+		form: FormInstance;
+	},
 ) => {
 	const [value, setValue] = useState<StoreValue>();
-	const form = options?.form || useContext(FormContext);
+	const formContext = useContext(FormContext);
+	const form = options?.form || formContext;
 
 	const internalPath = getNamePath(dependencies);
 	const namePathRef = useRefUpdate(internalPath);
@@ -33,6 +34,7 @@ const useWatch = (
 		});
 		setValue(getFieldValue(namePathRef.current));
 		return cancelWatch;
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	return value;
 };
