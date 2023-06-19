@@ -1,5 +1,10 @@
 import { FieldEntity, NameCollection, NamePath } from '../type';
 
+/** Compare if namepath is equal. */
+export const compareNamePath = (namePath1?: NamePath, namePath2?: NamePath) => {
+	return `${namePath1}` === `${namePath2}`;
+};
+
 /** Return field entities from the collection. If the collection is not passed, return all field entities. */
 export const getFieldEntitiesByCollection = (
 	{ scopeName, nameList }: NameCollection = {},
@@ -25,9 +30,4 @@ export const getFieldEntitiesByCollection = (
 		namePathSet = new Set(entities);
 	}
 	return Array.from(namePathSet);
-};
-
-/** Compare if namepath is equal. */
-export const compareNamePath = (namePath1?: NamePath, namePath2?: NamePath) => {
-	return `${namePath1}` === `${namePath2}`;
 };

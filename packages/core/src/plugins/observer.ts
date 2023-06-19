@@ -1,16 +1,17 @@
-import type { Store } from '../type';
+import type { Store, ValueChangeParams } from '../type';
 
 export type ISubscribeFunType<T> = (data: T) => void;
-class Observer<T extends Store = Store> {
-	#subs: Map<symbol, ISubscribeFunType<T>> = new Map();
+type ObserverInnerValue<T extends Store> = ValueChangeParams<T>;
+class Observer<T extends Store> {
+	#subs: Map<symbol, ISubscribeFunType<ObserverInnerValue<T>>> = new Map();
 
-	dispatch = (state: T) => {
-		this.#subs.forEach((fun: ISubscribeFunType<T>) => {
+	dispatch = (state: ObserverInnerValue<T>) => {
+		this.#subs.forEach((fun) => {
 			fun(state);
 		});
 	};
 
-	subscribe = (fun: ISubscribeFunType<T>) => {
+	subscribe = (fun: ISubscribeFunType<ObserverInnerValue<T>>) => {
 		const id = Symbol('subscribe');
 		this.#subs.set(id, fun);
 		return () => {

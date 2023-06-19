@@ -1,10 +1,9 @@
-import { Rule, Values } from 'async-validator';
-import { ReactNode } from 'react';
+import { Rule } from 'async-validator';
 import { ISubscribeFunType } from './plugins/observer';
 export type InternalNamePath = (string | number)[];
 export type NamePath = string | number | InternalNamePath;
 
-export type StoreValue = any;
+export type StoreValue = unknown[] | Record<string, unknown> | boolean | number | string;
 export type Store = Record<string, StoreValue>;
 
 export type NameCollection = {
@@ -40,11 +39,12 @@ export interface Meta {
 	name: InternalNamePath;
 	validated: boolean;
 }
-
 export interface FormInstance<T extends StoreValue = StoreValue> {
-	getFieldValue: (name: NamePath) => any;
+	// todo 根据 T 与 NamePath 的关系，推导出 返回值 的类型
+	getFieldValue: <const NP extends NamePath>(name: NP) => any;
 	getFieldsValue: (collection?: NameCollection) => Partial<T>;
-	setFieldValue: (name: NamePath, value: any) => void;
+	// todo 根据 T 与 NamePath 的关系，推导出 value 的类型
+	setFieldValue: <const NP extends NamePath>(name: NP, value: any) => void;
 	setFieldsValue: (values: ValuesInT<T>) => void;
 	resetFields: (collection?: Omit<NameCollection, 'getStoreAll'>) => void;
 	validateFields: (options?: ValidateParams) => Promise<Partial<T>>;
@@ -53,13 +53,13 @@ export interface FormInstance<T extends StoreValue = StoreValue> {
 	submit: () => void;
 }
 
-export interface ValidateErrorEntity<T extends StoreValue = StoreValue> {
+export interface ValidateErrorEntity<T extends StoreValue> {
 	values: T;
 	errorFields: { name: InternalNamePath; errors: string[] }[];
 	outOfDate: boolean;
 }
 
-export interface Callbacks<T> {
+export interface Callbacks<T extends Store> {
 	onValuesChange?: (
 		changedValues: Partial<T>,
 		values: T,
@@ -74,7 +74,7 @@ export type WatchCallBack = (
 	allValues: Store,
 	namePathList: InternalNamePath[],
 ) => void;
-export interface InternalHooks<T extends StoreValue = StoreValue> {
+export interface InternalHooks<T extends Store> {
 	registerField: (entity: FieldEntity) => () => void;
 	setInitialValues: (values: T, init: boolean) => void;
 	setPreserve: (preserve?: boolean) => void;
@@ -84,7 +84,7 @@ export interface InternalHooks<T extends StoreValue = StoreValue> {
 	registerWatch: (callback: WatchCallBack) => void;
 }
 
-export interface InternalFormInstance<T extends StoreValue = StoreValue>
+export interface InternalFormInstance<T extends Store>
 	extends Omit<FormInstance<T>, 'clearValidate'> {
 	getInternalHooks: () => InternalHooks<T>;
 	validateTrigger?: string | string[];
@@ -96,12 +96,9 @@ export interface FormInternalField {
 	name?: NamePath;
 	dependency?: Dependency[];
 	rules?: Rule[];
-	initialValue?: any;
+	initialValue?: StoreValue;
 	list?: FormInternalField[];
 	fieldType?: 'scope';
-	children?:
-		| ReactNode
-		| ((props: FieldInjectProps, form: FormInstance<Values>) => ReactNode);
 }
 
 // ==================== dependency ====================
@@ -112,7 +109,7 @@ export interface Dependency {
 // ==================== entity ====================
 
 export interface FieldInjectProps {
-	[name: string]: any;
+	[name: string]: unknown;
 }
 
 export interface FieldEntity {
@@ -120,7 +117,7 @@ export interface FieldEntity {
 	isFieldTouched?: () => boolean;
 	getNamePath: () => InternalNamePath;
 	isPreserve: () => boolean | undefined;
-	validate?: (options?: ValidateOptions) => Promise<ValidateErrorEntity>;
+	validate?: (options?: ValidateOptions) => Promise<ValidateErrorEntity<StoreValue>>;
 	getMeta?: () => Meta;
 	props?: FormInternalField;
 }
@@ -156,7 +153,7 @@ export type ValueChangeInfo =
 	| DependenciesUpdateInfo
 	| ClearValidateInfo
 	| ValidateInfo;
-export interface ValueChangeParams<T extends StoreValue> {
+export interface ValueChangeParams<T extends Store> {
 	info: ValueChangeInfo;
 	prevStore?: T;
 	namePathList?: NamePath[];

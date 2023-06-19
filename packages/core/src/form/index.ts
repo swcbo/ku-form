@@ -6,7 +6,6 @@ import {
 	InternalNamePath,
 	NameCollection,
 	Store,
-	ValueChangeParams,
 	InternalFormInstance,
 	InternalHooks,
 	Callbacks,
@@ -15,18 +14,19 @@ import {
 	UpdateAction,
 	ValidateParams,
 	WatchCallBack,
+	ValidateErrorEntity,
 } from '../type';
 import { getFieldEntitiesByCollection } from '../utils/namePathUtils';
 import { getValue, setValue } from '../utils/valueUtils';
 import Observer from '../plugins/observer';
 import genProxy from '../plugins/proxy';
 
-class Form<T extends Store = Store> {
+class Form<T extends Store> {
 	#store: T = {} as T;
 	#initialValues: T = {} as T;
 	#fieldEntities: FieldEntity[] = [];
 	#scopeMap: Map<string, FieldEntity> = new Map();
-	#observer = new Observer<ValueChangeParams<T>>();
+	#observer = new Observer<T>();
 	#preserve?: boolean;
 	#callbacks: Callbacks<T> = {};
 	#watchMap: Map<symbol, WatchCallBack> = new Map();
@@ -103,8 +103,7 @@ class Form<T extends Store = Store> {
 	};
 
 	// ================= watch ==================
-
-	private registerWatch: InternalHooks['registerWatch'] = (callback) => {
+	private registerWatch: InternalHooks<T>['registerWatch'] = (callback) => {
 		const symbol = Symbol('watch');
 		this.#watchMap.set(symbol, callback);
 		return () => {
@@ -114,10 +113,11 @@ class Form<T extends Store = Store> {
 
 	private triggerWatch = (namePathList: InternalNamePath[] = []) => {
 		if (this.#watchMap.size === 0) return;
-		const values = this.getFieldsValue();
+		// todo 优化 getFieldsValue 的 返回类型
+		const values = this.getFieldsValue() as T;
 		const allValues = this.getFieldsValue({
 			getStoreAll: true,
-		});
+		}) as T;
 		this.#watchMap.forEach((callback) => {
 			callback(values, allValues, namePathList);
 		});
@@ -308,7 +308,7 @@ class Form<T extends Store = Store> {
 		options,
 		...other
 	}: ValidateParams = {}) => {
-		const promiseList: Promise<StoreValue>[] = [];
+		const promiseList: Promise<ValidateErrorEntity<StoreValue>>[] = [];
 		const collection = {
 			nameList,
 			scopeName,
