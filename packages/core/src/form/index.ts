@@ -330,6 +330,17 @@ class Form<T extends Store> {
 
 		return returnPromise
 			.then((validates) => {
+				// const errorFields = validates.filter((item) => item.status === 'rejected');
+				// const values = this.getFieldsValue(collection);
+				// if (errorFields.length > 0) {
+				// 	const error = new Error('Fields validate error', {
+				// 		cause: {
+				// 			values,
+				// 			errorFields,
+				// 		},
+				// 	});
+				// 	return Promise.reject(error);
+				// }
 				const errors = validates.filter((item) => item.status === 'rejected');
 				const values = this.getFieldsValue(collection);
 				if (errors.length > 0) {
@@ -337,9 +348,8 @@ class Form<T extends Store> {
 						values,
 						errorFields: errors,
 					});
-				} else {
-					return Promise.resolve(values);
 				}
+				return values;
 			})
 			.catch((e) => {
 				console.log(e);

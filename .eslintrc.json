@@ -41,6 +41,7 @@
 		"quotes": ["error", "single"],
 		"semi": ["error", "always"],
 		"no-void": ["off"],
+		"prefer-promise-reject-errors": ["off"],
 		// react relation rules
 		"react-hooks/rules-of-hooks": "error",
 		"react-hooks/exhaustive-deps": "warn",
