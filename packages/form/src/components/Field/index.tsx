@@ -113,7 +113,7 @@ const Field = ({
 			[valuePropName]: value,
 		};
 		/** proxy trigger */
-		const originTrigger = control[trigger];
+		const originTrigger = control[trigger] as (...args: EventArgs) => void;
 		control[trigger] = (...args: EventArgs) => {
 			let currentValue: StoreValue;
 			if (getValueFromEvent) {
@@ -133,7 +133,7 @@ const Field = ({
 		/** proxy validate */
 		const validateTriggerList: string[] = toArray(validateTrigger) || [];
 		validateTriggerList.forEach((triggerName) => {
-			const originTrigger = control[triggerName];
+			const originTrigger = control[triggerName] as (...args: EventArgs) => void;
 			control[triggerName] = (...args: EventArgs) => {
 				originTrigger?.(...args);
 				if (rules && rules.length) {

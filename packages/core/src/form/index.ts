@@ -70,6 +70,8 @@ class Form<T extends Store> {
 		} else {
 			this.#fieldEntities.push(entity);
 			const namePath = entity.getNamePath();
+			const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
+			this.triggerWatch([namePath]);
 			if (namePath.length) {
 				if (entity.props?.initialValue) {
 					const formInitialValue = this.getInitialValue(namePath);
@@ -78,11 +80,8 @@ class Form<T extends Store> {
 					} else {
 						this.setFieldValue(namePath, entity.props.initialValue);
 					}
-				} else {
-					this.triggerWatch([namePath]);
 				}
 			}
-			const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
 
 			return () => {
 				this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
@@ -98,6 +97,7 @@ class Form<T extends Store> {
 						}
 					}
 				}
+				this.triggerWatch([namePath]);
 			};
 		}
 	};
@@ -209,6 +209,7 @@ class Form<T extends Store> {
 			namePathList: [namePath],
 		});
 		const { onValuesChange } = this.#callbacks;
+		this.triggerWatch([namePath]);
 
 		if (onValuesChange) {
 			const changedValues = getValue(this.#store, namePath);

@@ -1,11 +1,11 @@
 import FormContext from '../../context/FormContext';
 import useForm from '../../hooks/useForm';
 import useInitFun from '../../hooks/useInit';
-import { FormProps, FormRef } from '../../types/form';
+import { FormContextStore, FormProps, FormRef } from '../../types/form';
 import { InternalFormInstance, Store } from '@hedone/form-core';
 import { forwardRef, memo, useCallback, useImperativeHandle } from 'react';
 
-export const Form = <T extends Store = Store>(
+const Form = <T extends Store = Store>(
 	{
 		form,
 		colon = true,
@@ -20,10 +20,10 @@ export const Form = <T extends Store = Store>(
 		onValuesChange,
 		...otherProps
 	}: FormProps<T>,
-	ref: React.Ref<FormRef>,
+	ref: React.Ref<FormRef<T>>,
 ) => {
-	const [formInstance] = useForm(form);
-	const internalFormInstance = formInstance as unknown as InternalFormInstance;
+	const [formInstance] = useForm<T>(form);
+	const internalFormInstance = formInstance as unknown as InternalFormInstance<T>;
 	const { setCallbacks, setPreserve, setInitialValues } =
 		internalFormInstance.getInternalHooks();
 	setCallbacks({
@@ -33,7 +33,7 @@ export const Form = <T extends Store = Store>(
 	});
 	setPreserve(preserve);
 	useInitFun((init) => {
-		setInitialValues(initialValues, init);
+		setInitialValues(initialValues as T, init);
 	});
 	useImperativeHandle(ref, () => formInstance);
 
@@ -57,20 +57,22 @@ export const Form = <T extends Store = Store>(
 	return (
 		<form {...otherProps} onSubmit={onSubmit} onReset={onReset}>
 			<FormContext.Provider
-				value={{
-					...internalFormInstance,
-					colon,
-					editable,
-					disabled,
-					preserve,
-					validateTrigger,
-				}}>
+				value={
+					{
+						...internalFormInstance,
+						colon,
+						editable,
+						disabled,
+						preserve,
+						validateTrigger,
+					} as FormContextStore
+				}>
 				{children}
 			</FormContext.Provider>
 		</form>
 	);
 };
 const WrapperForm = forwardRef(Form) as <T extends Store>(
-	props: FormProps<T> & { ref?: React.Ref<FormRef> },
+	props: FormProps<T> & { ref?: React.Ref<FormRef<T>> },
 ) => React.ReactElement;
 export default memo(WrapperForm);

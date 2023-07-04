@@ -4,15 +4,18 @@ import {
 	FormInstance,
 	InternalFormInstance,
 	NamePath,
+	Store,
 	StoreValue,
 	getNamePath,
+	getValue,
 } from '@hedone/form-core';
 import useRefUpdate from './useRefUpdate';
 
-const useWatch = (
+const useWatch = <T extends Store>(
 	dependencies: NamePath,
 	options?: {
-		form: FormInstance;
+		form: FormInstance<T>;
+		preserve?: boolean;
 	},
 ) => {
 	const [value, setValue] = useState<StoreValue>();
@@ -24,10 +27,16 @@ const useWatch = (
 	const oldValue = useRefUpdate(value);
 
 	useEffect(() => {
-		const { getInternalHooks, getFieldValue } = form as InternalFormInstance;
+		const { getInternalHooks, getFieldValue, getFieldsValue } =
+			form as InternalFormInstance<T>;
 		const { registerWatch } = getInternalHooks();
 		const cancelWatch = registerWatch(() => {
-			const currentValue = getFieldValue(namePathRef.current);
+			const currentValue = getValue(
+				getFieldsValue({
+					getStoreAll: options?.preserve,
+				}),
+				namePathRef.current,
+			);
 			if (oldValue.current !== currentValue) {
 				setValue(currentValue);
 			}

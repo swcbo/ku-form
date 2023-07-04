@@ -1,4 +1,10 @@
-import { FormInternalField, NamePath, Store, StoreValue } from '@hedone/form-core';
+import {
+	FormInstance,
+	FormInternalField,
+	NamePath,
+	Store,
+	StoreValue,
+} from '@hedone/form-core';
 import { ReactNode } from 'react';
 import { FormBasicProps } from './form';
 export type EventArgs = StoreValue[];
@@ -13,6 +19,7 @@ export interface FieldProps extends FormInternalField, FormBasicProps {
 	getValueFromEvent?: (...args: EventArgs) => StoreValue;
 	normalize?: (value: StoreValue, prevValue: StoreValue, allValues: Store) => StoreValue;
 	onReset?: () => void;
+	children?: ReactNode | ((props: Store, form: FormInstance) => ReactNode);
 }
 export interface FieldInstance {
 	prefixName?: NamePath;

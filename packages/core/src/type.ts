@@ -3,7 +3,8 @@ import { ISubscribeFunType } from './plugins/observer';
 export type InternalNamePath = (string | number)[];
 export type NamePath = string | number | InternalNamePath;
 
-export type StoreValue = unknown[] | Record<string, unknown> | boolean | number | string;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type StoreValue = any;
 export type Store = Record<string, StoreValue>;
 
 export type NameCollection = {
@@ -39,12 +40,12 @@ export interface Meta {
 	name: InternalNamePath;
 	validated: boolean;
 }
-export interface FormInstance<T extends StoreValue = StoreValue> {
+export interface FormInstance<T extends Store = Store> {
 	// todo 根据 T 与 NamePath 的关系，推导出 返回值 的类型
-	getFieldValue: <const NP extends NamePath>(name: NP) => any;
+	getFieldValue: <const NP extends NamePath>(name: NP) => StoreValue;
 	getFieldsValue: (collection?: NameCollection) => Partial<T>;
 	// todo 根据 T 与 NamePath 的关系，推导出 value 的类型
-	setFieldValue: <const NP extends NamePath>(name: NP, value: any) => void;
+	setFieldValue: <const NP extends NamePath>(name: NP, value: StoreValue) => void;
 	setFieldsValue: (values: ValuesInT<T>) => void;
 	resetFields: (collection?: Omit<NameCollection, 'getStoreAll'>) => void;
 	validateFields: (options?: ValidateParams) => Promise<Partial<T>>;

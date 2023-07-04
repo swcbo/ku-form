@@ -1,18 +1,17 @@
 import Form, { FormField, useForm, useWatch } from '@hedone/form';
 import './App.css';
 import { useState } from 'react';
-
 function App() {
 	const [form] = useForm();
 	const [show, setShow] = useState(true);
-	const name = useWatch(['name'], { form });
-	console.log(form, 'form', name, show);
+	const name = useWatch(['user', 'name'], { form });
+	console.log('watch', name);
 	return (
 		<>
 			<Form form={form} onFinish={console.log} onReset={console.log}>
 				{show ? (
-					<FormField name={['user', 'name']} preserve={false}>
-						<input placeholder="请输入问题" defaultValue="" />
+					<FormField name={['user', 'name']} initialValue="测试">
+						<input placeholder="请输入问题" />
 					</FormField>
 				) : (
 					<>321321</>
@@ -28,16 +27,13 @@ function App() {
 			</div>
 			<div
 				onClick={() => {
-					console.log(
-						form.getFieldsValue({ getStoreAll: true }),
-						'form.getFieldsValue()',
-					);
+					console.log(form.getFieldsValue(), 'form.getFieldsValue()');
 				}}>
 				点击获取数据
 			</div>
 			<div
 				onClick={() => {
-					form.setFieldValue('name', new Date().getTime() + '');
+					form.setFieldValue(['user', 'name'], new Date().getTime() + '');
 				}}>
 				点击切换数据
 			</div>
@@ -50,7 +46,9 @@ function App() {
 			<div
 				onClick={() => {
 					form.setFieldsValue({
-						name: 'user',
+						user: {
+							name: '测试哇',
+						},
 					});
 				}}>
 				设置值
@@ -59,7 +57,7 @@ function App() {
 				onClick={() => {
 					console.log(
 						form.isFieldsTouched({
-							nameList: ['user'],
+							nameList: [['user', 'name']],
 						}),
 					);
 				}}>

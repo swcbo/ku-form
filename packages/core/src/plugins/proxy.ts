@@ -7,11 +7,9 @@ const genProxy = <T extends Store = Store>(
 ) => {
 	return new Proxy<T>(obj, {
 		get(target, key, receiver) {
-			// console.log('get', target, key, receiver);
 			return Reflect.get(target, key, receiver);
 		},
 		set(target, key, value, receiver) {
-			// console.log('set', target, key, value, receiver);
 			Reflect.set(target, key, value, receiver);
 			const path = [getNamePath(key as string)];
 			callback(path);
