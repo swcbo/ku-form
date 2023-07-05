@@ -49,8 +49,9 @@ class Form<T extends Store> {
 		if (values) {
 			this.#initialValues = values;
 			if (init) {
-				this.updateStore(cloneDeep(values));
-				this.triggerWatch();
+				merge(this.#store, values);
+				// this.updateStore(cloneDeep(values));
+				// this.triggerWatch();
 			}
 		}
 	};
@@ -71,7 +72,7 @@ class Form<T extends Store> {
 			this.#fieldEntities.push(entity);
 			const namePath = entity.getNamePath();
 			const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
-			this.triggerWatch([namePath]);
+
 			if (namePath.length) {
 				if (entity.props?.initialValue) {
 					const formInitialValue = this.getInitialValue(namePath);
@@ -82,7 +83,7 @@ class Form<T extends Store> {
 					}
 				}
 			}
-
+			this.triggerWatch([namePath]);
 			return () => {
 				this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
 				unSubscribe();
@@ -93,7 +94,7 @@ class Form<T extends Store> {
 						if (defaultValue) {
 							set(this.#store, namePath, defaultValue);
 						} else {
-							this.updateStore(omit(this.#store, namePath) as T);
+							omit(this.#store, namePath);
 						}
 					}
 				}
@@ -209,7 +210,7 @@ class Form<T extends Store> {
 			namePathList: [namePath],
 		});
 		const { onValuesChange } = this.#callbacks;
-		this.triggerWatch([namePath]);
+		// this.triggerWatch([namePath]);
 
 		if (onValuesChange) {
 			const changedValues = getValue(this.#store, namePath);
@@ -248,7 +249,7 @@ class Form<T extends Store> {
 
 	private setFieldsValue = (value: Partial<T>) => {
 		const prevStore = cloneDeep(this.#store);
-		this.updateStore(merge({}, prevStore, value));
+		merge(this.#store, prevStore, value);
 		this.#observer.dispatch({
 			prevStore,
 			info: {
@@ -267,7 +268,8 @@ class Form<T extends Store> {
 		).map(({ getNamePath }) => getNamePath());
 		nameList.forEach((name) => {
 			if (name) {
-				this.updateStore(set(this.#store, name, this.getInitialValue(name)));
+				// this.updateStore(set(this.#store, name, this.getInitialValue(name)));
+				set(this.#store, name, this.getInitialValue(name));
 			}
 		});
 		this.#observer.dispatch({

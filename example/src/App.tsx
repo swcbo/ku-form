@@ -5,12 +5,20 @@ function App() {
 	const [form] = useForm();
 	const [show, setShow] = useState(true);
 	const name = useWatch(['user', 'name'], { form });
-	console.log('watch', name);
+	console.log('watch', name, form);
 	return (
 		<>
-			<Form form={form} onFinish={console.log} onReset={console.log}>
+			<Form
+				form={form}
+				onFinish={console.log}
+				onReset={console.log}
+				initialValues={{
+					user: {
+						name: '测试',
+					},
+				}}>
 				{show ? (
-					<FormField name={['user', 'name']} initialValue="测试">
+					<FormField name={['user', 'name']} preserve={false}>
 						<input placeholder="请输入问题" />
 					</FormField>
 				) : (
