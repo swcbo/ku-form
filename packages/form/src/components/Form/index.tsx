@@ -22,7 +22,6 @@ const Form = <T extends Store = Store>(
 	}: FormProps<T>,
 	ref: React.Ref<FormRef<T>>,
 ) => {
-	console.log('Form', form);
 	const [formInstance] = useForm<T>(form);
 	const internalFormInstance = formInstance as unknown as InternalFormInstance<T>;
 	const { setCallbacks, setPreserve, setInitialValues } =

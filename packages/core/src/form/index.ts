@@ -50,8 +50,6 @@ class Form<T extends Store> {
 			this.#initialValues = values;
 			if (init) {
 				merge(this.#store, values);
-				// this.updateStore(cloneDeep(values));
-				// this.triggerWatch();
 			}
 		}
 	};
@@ -83,7 +81,6 @@ class Form<T extends Store> {
 					}
 				}
 			}
-			this.triggerWatch([namePath]);
 			return () => {
 				this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
 				unSubscribe();
@@ -98,7 +95,6 @@ class Form<T extends Store> {
 						}
 					}
 				}
-				this.triggerWatch([namePath]);
 			};
 		}
 	};
@@ -210,8 +206,6 @@ class Form<T extends Store> {
 			namePathList: [namePath],
 		});
 		const { onValuesChange } = this.#callbacks;
-		// this.triggerWatch([namePath]);
-
 		if (onValuesChange) {
 			const changedValues = getValue(this.#store, namePath);
 			onValuesChange(changedValues, this.getFieldsValue() as T, source);
@@ -269,6 +263,7 @@ class Form<T extends Store> {
 		nameList.forEach((name) => {
 			if (name) {
 				// this.updateStore(set(this.#store, name, this.getInitialValue(name)));
+				console.log(name, this.getInitialValue(name), 'resetFields');
 				set(this.#store, name, this.getInitialValue(name));
 			}
 		});

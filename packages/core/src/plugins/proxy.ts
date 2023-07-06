@@ -6,34 +6,28 @@ const genProxy = <T extends Store = Store>(
 	callback: (namePath: InternalNamePath[]) => void,
 	paths: InternalNamePath[] = [],
 ) => {
-	const deps = new Set<string>();
+	const proxyMap = new WeakMap();
 	return new Proxy<T>(obj, {
 		get(target, key: string, receiver) {
-			//  对象或数组的话递归代理
-			const path = [...paths, getNamePath(key as string)];
-			if (
-				typeof target[key] === 'object' &&
-				target[key] !== null &&
-				!deps.has(path.join('.'))
-			) {
-				deps.add(path.join('.'));
-				genProxy(target[key], callback, path);
+			if (typeof target[key] === 'object' && target[key] !== null) {
+				if (!proxyMap.has(target[key])) {
+					const path = [...paths, getNamePath(key as string)];
+					proxyMap.set(target[key], genProxy(target[key], callback, path));
+				}
+				return proxyMap.get(target[key]);
 			}
-			console.log('get', target, key);
 			return Reflect.get(target, key, receiver);
 		},
 		set(target, key, value, receiver) {
-			console.log('set', key, value);
 			Reflect.set(target, key, value, receiver);
 			const path = [...paths, getNamePath(key as string)];
 			callback(path);
 			return true;
 		},
-		deleteProperty(target, key) {
-			Reflect.deleteProperty(target, key);
-			const path = [...paths, getNamePath(key as string)];
-			deps.delete(path.join('.'));
-			callback(path);
+		deleteProperty(target, key: string) {
+			if (typeof target[key] === 'object' && target[key] !== null) {
+				proxyMap.delete(target[key]);
+			}
 			return true;
 		},
 	});

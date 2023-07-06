@@ -1,11 +1,12 @@
 import Form, { FormField, useForm, useWatch } from '@hedone/form';
-import './App.css';
 import { useState } from 'react';
+import './App.css';
+
 function App() {
 	const [form] = useForm();
 	const [show, setShow] = useState(true);
-	const name = useWatch(['user', 'name'], { form });
-	console.log('watch', name, form);
+	const name = useWatch(['user'], { form });
+	console.log(name, 'name', 33333);
 	return (
 		<>
 			<Form
@@ -24,6 +25,9 @@ function App() {
 				) : (
 					<>321321</>
 				)}
+				<FormField name={['ages', 0, 'name']} preserve={false}>
+					<input placeholder="年龄" />
+				</FormField>
 				<button type="submit">提交</button>
 				<button type="reset">重置</button>
 			</Form>
