@@ -5,8 +5,12 @@ import './App.css';
 function App() {
 	const [form] = useForm();
 	const [show, setShow] = useState(true);
-	const name = useWatch(['user'], { form });
-	console.log(name, 'name', 33333);
+	const name = useWatch(['user', 'name'], { form });
+	const cccc = useWatch(['user', 'name', 'ccc'], { form });
+	const user = useWatch(['user'], { form });
+	console.log(name, 'name');
+	console.log(user, 'user');
+	console.log(cccc, 'ccc');
 	return (
 		<>
 			<Form
@@ -15,11 +19,13 @@ function App() {
 				onReset={console.log}
 				initialValues={{
 					user: {
-						name: '测试',
+						name: {
+							ccc: '测试',
+						},
 					},
 				}}>
 				{show ? (
-					<FormField name={['user', 'name']} preserve={false}>
+					<FormField name={['user', 'name', 'ccc']} preserve={false}>
 						<input placeholder="请输入问题" />
 					</FormField>
 				) : (
@@ -45,7 +51,7 @@ function App() {
 			</div>
 			<div
 				onClick={() => {
-					form.setFieldValue(['user', 'name'], new Date().getTime() + '');
+					form.setFieldValue(['user', 'name', 'ccc'], new Date().getTime() + '');
 				}}>
 				点击切换数据
 			</div>
@@ -59,7 +65,9 @@ function App() {
 				onClick={() => {
 					form.setFieldsValue({
 						user: {
-							name: '测试哇',
+							name: {
+								ccc: 'ces13',
+							},
 						},
 					});
 				}}>
@@ -69,7 +77,7 @@ function App() {
 				onClick={() => {
 					console.log(
 						form.isFieldsTouched({
-							nameList: [['user', 'name']],
+							nameList: [['user', 'name', 'ccc']],
 						}),
 					);
 				}}>

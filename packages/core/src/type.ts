@@ -70,11 +70,11 @@ export interface Callbacks<T extends Store> {
 	onFinishFailed?: (errorInfo: ValidateErrorEntity<T>) => void;
 }
 // ============== internal =====================================
-export type WatchCallBack = (
-	values: Store,
-	allValues: Store,
-	namePathList: InternalNamePath[],
-) => void;
+export type WatchCallBack = (data: {
+	values: Store;
+	allValues: Store;
+	namePathList: InternalNamePath[];
+}) => void;
 export interface InternalHooks<T extends Store> {
 	registerField: (entity: FieldEntity) => () => void;
 	setInitialValues: (values: T, init: boolean) => void;

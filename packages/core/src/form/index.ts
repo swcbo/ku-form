@@ -110,13 +110,12 @@ class Form<T extends Store> {
 
 	private triggerWatch = (namePathList: InternalNamePath[] = []) => {
 		if (this.#watchMap.size === 0) return;
-		// todo 优化 getFieldsValue 的 返回类型
 		const values = this.getFieldsValue() as T;
 		const allValues = this.getFieldsValue({
 			getStoreAll: true,
 		}) as T;
-		this.#watchMap.forEach((callback) => {
-			callback(values, allValues, namePathList);
+		this.#watchMap.forEach((fun) => {
+			fun({ values, allValues, namePathList });
 		});
 	};
 
@@ -232,7 +231,6 @@ class Form<T extends Store> {
 
 	private setFieldValue = (name: NamePath, value: StoreValue) => {
 		const prevStore = cloneDeep(this.#store);
-
 		setValue(this.#store, name, value);
 		this.#observer.dispatch({
 			prevStore,
@@ -262,8 +260,6 @@ class Form<T extends Store> {
 		).map(({ getNamePath }) => getNamePath());
 		nameList.forEach((name) => {
 			if (name) {
-				// this.updateStore(set(this.#store, name, this.getInitialValue(name)));
-				console.log(name, this.getInitialValue(name), 'resetFields');
 				set(this.#store, name, this.getInitialValue(name));
 			}
 		});

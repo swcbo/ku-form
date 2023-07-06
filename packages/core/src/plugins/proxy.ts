@@ -4,14 +4,15 @@ import { InternalNamePath, Store, getNamePath } from '..';
 const genProxy = <T extends Store = Store>(
 	obj: T,
 	callback: (namePath: InternalNamePath[]) => void,
-	paths: InternalNamePath[] = [],
+	paths: InternalNamePath = [],
 ) => {
 	const proxyMap = new WeakMap();
+
 	return new Proxy<T>(obj, {
 		get(target, key: string, receiver) {
 			if (typeof target[key] === 'object' && target[key] !== null) {
 				if (!proxyMap.has(target[key])) {
-					const path = [...paths, getNamePath(key as string)];
+					const path = [...paths, ...getNamePath(key as string)];
 					proxyMap.set(target[key], genProxy(target[key], callback, path));
 				}
 				return proxyMap.get(target[key]);
@@ -20,7 +21,7 @@ const genProxy = <T extends Store = Store>(
 		},
 		set(target, key, value, receiver) {
 			Reflect.set(target, key, value, receiver);
-			const path = [...paths, getNamePath(key as string)];
+			const path = [[...paths, ...getNamePath(key as string)]];
 			callback(path);
 			return true;
 		},
