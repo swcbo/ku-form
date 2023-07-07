@@ -28,7 +28,12 @@ const useWatch = <T extends Store>(
 		const { getInternalHooks, getFieldsValue } = form as InternalFormInstance<T>;
 		const { registerWatch } = getInternalHooks();
 
-		const cancelWatch = registerWatch(({ values, allValues }) => {
+		const cancelWatch = registerWatch(({ values, allValues, namePathList }) => {
+			if (
+				namePathList.length &&
+				!namePathList.join(',').startsWith(`${namePathRef.current.join(',')}`)
+			)
+				return;
 			const { value, strValue } = getValueAndStringify(
 				options?.preserve ? allValues : values,
 				namePathRef.current,

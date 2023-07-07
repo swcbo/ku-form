@@ -6,13 +6,13 @@ function App() {
 	const [form] = useForm();
 	const [show, setShow] = useState(true);
 	const cccc = useWatch(['user', 'name', 'ccc'], { form });
-	console.log(cccc, 'cccc');
+	const name = useWatch(['user', 'name'], { form });
+
+	console.log(cccc, 'cccc', name, 'name');
 	return (
 		<>
 			<Form
 				form={form}
-				onFinish={console.log}
-				onReset={console.log}
 				initialValues={{
 					user: {
 						name: {
@@ -21,13 +21,13 @@ function App() {
 					},
 				}}>
 				{show ? (
-					<FormField name={['user', 'name', 'ccc']}>
+					<FormField name={['user', 'name', 'ccc']} preserve={false}>
 						<input placeholder="请输入问题" />
 					</FormField>
 				) : (
 					<>321321</>
 				)}
-				<FormField name={['ages', 0, 'name']}>
+				<FormField name={['user', 'name']}>
 					<input placeholder="年龄" />
 				</FormField>
 				<button type="submit">提交</button>
