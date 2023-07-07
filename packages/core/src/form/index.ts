@@ -1,25 +1,25 @@
-import { getNamePath } from './../utils/typeUtils';
-import { cloneDeep, merge, omit, set } from 'lodash-es';
+import { cloneDeep, merge, set } from 'lodash-es';
+import Observer from '../plugins/observer';
+import genProxy from '../plugins/proxy';
 import {
+	Callbacks,
 	FieldEntity,
-	NamePath,
-	InternalNamePath,
-	NameCollection,
-	Store,
 	InternalFormInstance,
 	InternalHooks,
-	Callbacks,
+	InternalNamePath,
+	NameCollection,
+	NamePath,
 	ReducerAction,
+	Store,
 	StoreValue,
 	UpdateAction,
+	ValidateErrorEntity,
 	ValidateParams,
 	WatchCallBack,
-	ValidateErrorEntity,
 } from '../type';
 import { getFieldEntitiesByCollection } from '../utils/namePathUtils';
 import { getValue, setValue } from '../utils/valueUtils';
-import Observer from '../plugins/observer';
-import genProxy from '../plugins/proxy';
+import { getNamePath } from './../utils/typeUtils';
 
 class Form<T extends Store> {
 	#store: T = {} as T;
@@ -70,7 +70,6 @@ class Form<T extends Store> {
 			this.#fieldEntities.push(entity);
 			const namePath = entity.getNamePath();
 			const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
-
 			if (namePath.length) {
 				if (entity.props?.initialValue) {
 					const formInitialValue = this.getInitialValue(namePath);
@@ -79,6 +78,8 @@ class Form<T extends Store> {
 					} else {
 						this.setFieldValue(namePath, entity.props.initialValue);
 					}
+				} else {
+					this.triggerWatch([entity.getNamePath()]);
 				}
 			}
 			return () => {
@@ -88,12 +89,10 @@ class Form<T extends Store> {
 					const namePath = entity.getNamePath();
 					if (namePath) {
 						const defaultValue = this.getInitialValue(namePath);
-						if (defaultValue) {
-							set(this.#store, namePath, defaultValue);
-						} else {
-							omit(this.#store, namePath);
-						}
+						set(this.#store, namePath, defaultValue);
 					}
+				} else {
+					this.triggerWatch([entity.getNamePath()]);
 				}
 			};
 		}
@@ -249,7 +248,6 @@ class Form<T extends Store> {
 				source: 'external',
 			},
 		});
-		this.triggerWatch();
 	};
 
 	private resetFields = (nameCollection?: Omit<NameCollection, 'getStoreAll'>) => {
@@ -271,7 +269,6 @@ class Form<T extends Store> {
 				return [...pre, name];
 			}, []),
 		});
-		this.triggerWatch(nameList);
 	};
 
 	private isFieldsTouched = (nameCollection?: Omit<NameCollection, 'getStoreAll'>) => {

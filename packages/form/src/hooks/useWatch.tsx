@@ -1,5 +1,3 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-import FormContext from '../context/FormContext';
 import {
 	FormInstance,
 	InternalFormInstance,
@@ -7,8 +5,10 @@ import {
 	Store,
 	StoreValue,
 	getNamePath,
-	getValue,
 } from '@hedone/form-core';
+import { useContext, useEffect, useRef, useState } from 'react';
+import FormContext from '../context/FormContext';
+import { getValueAndStringify } from '../utils/valueUtils';
 import useRefUpdate from './useRefUpdate';
 
 const useWatch = <T extends Store>(
@@ -25,20 +25,27 @@ const useWatch = <T extends Store>(
 	const namePathRef = useRefUpdate(internalPath);
 	const oldValue = useRef(value);
 	useEffect(() => {
-		const { getInternalHooks, getFieldValue } = form as InternalFormInstance<T>;
+		const { getInternalHooks, getFieldsValue } = form as InternalFormInstance<T>;
 		const { registerWatch } = getInternalHooks();
+
 		const cancelWatch = registerWatch(({ values, allValues }) => {
-			const current = getValue(
+			const { value, strValue } = getValueAndStringify(
 				options?.preserve ? allValues : values,
 				namePathRef.current,
 			);
-			const strValue = typeof current === 'object' ? JSON.stringify(current) : current;
 			if (oldValue.current !== strValue) {
-				setValue(current);
+				setValue(value);
 				oldValue.current = strValue;
 			}
 		});
-		setValue(getFieldValue(namePathRef.current));
+		const { value, strValue } = getValueAndStringify(
+			getFieldsValue({
+				getStoreAll: options?.preserve,
+			}),
+			namePathRef.current,
+		);
+		oldValue.current = strValue;
+		setValue(value);
 		return cancelWatch;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);

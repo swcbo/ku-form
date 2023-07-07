@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { Rule } from 'async-validator';
 import { ISubscribeFunType } from './plugins/observer';
 export type InternalNamePath = (string | number)[];
