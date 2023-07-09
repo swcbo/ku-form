@@ -24,7 +24,7 @@ import { getNamePath } from './../utils/typeUtils';
 class Form<T extends Store> {
 	#store: T = {} as T;
 	#initialValues: T = {} as T;
-	#fieldEntities: FieldEntity[] = [];
+	#fieldEntities: Map<string, FieldEntity> = new Map();
 	#scopeMap: Map<string, FieldEntity> = new Map();
 	#observer = new Observer<T>();
 	#preserve?: boolean;
@@ -67,8 +67,8 @@ class Form<T extends Store> {
 				this.#scopeMap.delete(scopePath);
 			};
 		} else {
-			this.#fieldEntities.push(entity);
 			const namePath = entity.getNamePath();
+			this.#fieldEntities.set(`${namePath}`, entity);
 			const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
 			if (namePath.length) {
 				if (entity.props?.initialValue) {
@@ -83,7 +83,7 @@ class Form<T extends Store> {
 				}
 			}
 			return () => {
-				this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
+				this.#fieldEntities.delete(`${namePath}`);
 				unSubscribe();
 				if (!this.isMergedPreserve(entity.isPreserve())) {
 					const namePath = entity.getNamePath();
@@ -219,7 +219,7 @@ class Form<T extends Store> {
 			return this.#store;
 		}
 		const entityList = nameCollection
-			? this.#fieldEntities
+			? [...this.#fieldEntities.values()]
 			: getFieldEntitiesByCollection(nameCollection, this.#fieldEntities);
 		return entityList.reduce<Partial<T>>((pre, { getNamePath }) => {
 			const name = getNamePath();

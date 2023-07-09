@@ -8,11 +8,11 @@ export const compareNamePath = (namePath1?: NamePath, namePath2?: NamePath) => {
 /** Return field entities from the collection. If the collection is not passed, return all field entities. */
 export const getFieldEntitiesByCollection = (
 	{ scopeName, nameList }: NameCollection = {},
-	entities: FieldEntity[],
+	entities: Map<string, FieldEntity>,
 ): FieldEntity[] => {
 	let namePathSet: Set<FieldEntity> = new Set();
 	if (scopeName) {
-		const nameList = entities.filter((item) =>
+		const nameList = [...entities.values()].filter((item) =>
 			compareNamePath(item.getNamePath(), scopeName),
 		);
 		namePathSet = new Set(nameList);
@@ -27,7 +27,7 @@ export const getFieldEntitiesByCollection = (
 		});
 	}
 	if (!scopeName && !nameList) {
-		namePathSet = new Set(entities);
+		namePathSet = new Set(entities.values());
 	}
 	return Array.from(namePathSet);
 };

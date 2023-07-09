@@ -86,7 +86,7 @@ export interface InternalHooks<T extends Store> {
 	registerWatch: (callback: WatchCallBack) => void;
 }
 
-export interface InternalFormInstance<T extends Store>
+export interface InternalFormInstance<T extends Store = Store>
 	extends Omit<FormInstance<T>, 'clearValidate'> {
 	getInternalHooks: () => InternalHooks<T>;
 	validateTrigger?: string | string[];

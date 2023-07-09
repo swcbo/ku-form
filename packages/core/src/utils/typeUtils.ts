@@ -11,3 +11,7 @@ export const getNamePath = (path?: NamePath) => {
 	if (!path) return [];
 	return toArray(path);
 };
+
+export const isFormInstance = <T>(form?: T) => {
+	return form && Object.prototype.hasOwnProperty.call(form, 'getInternalHooks');
+};

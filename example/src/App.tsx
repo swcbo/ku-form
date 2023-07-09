@@ -1,14 +1,17 @@
 import Form, { FormField, useForm, useWatch } from '@hedone/form';
 import { useState } from 'react';
 import './App.css';
+const Test = () => {
+	const cccc = useWatch(['user', 'name', 'ccc']);
+	const name = useWatch(['user', 'name']);
+	console.log(cccc, 'cccc', name, 'name');
+	return <></>;
+};
 
 function App() {
 	const [form] = useForm();
 	const [show, setShow] = useState(true);
-	const cccc = useWatch(['user', 'name', 'ccc'], { form });
-	const name = useWatch(['user', 'name'], { form });
 
-	console.log(cccc, 'cccc', name, 'name');
 	return (
 		<>
 			<Form
@@ -27,7 +30,8 @@ function App() {
 				) : (
 					<>321321</>
 				)}
-				<FormField name={['user', 'name']}>
+				<Test />
+				<FormField name={['tags', 0, 'name']}>
 					<input placeholder="年龄" />
 				</FormField>
 				<button type="submit">提交</button>
@@ -42,6 +46,14 @@ function App() {
 			<div
 				onClick={() => {
 					console.log(form.getFieldsValue(), 'form.getFieldsValue()');
+					console.log(
+						form.getFieldsValue({ getStoreAll: true }),
+						'form.getFieldsValue(all)',
+					);
+					console.log(
+						form.getFieldValue(['user', 'name', 'ccc']),
+						'form.getFieldValue()',
+					);
 				}}>
 				点击获取数据
 			</div>
