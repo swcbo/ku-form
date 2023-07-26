@@ -2,10 +2,8 @@ import Form, { FormField, useForm, useWatch } from '@hedone/form';
 import { useState } from 'react';
 import './App.css';
 const Test = () => {
-	const cccc = useWatch(['user', 'name', 'ccc']);
 	const name = useWatch(['user', 'name']);
-	console.log(cccc, 'cccc', name, 'name');
-	return <></>;
+	return <>{name?.ccc}</>;
 };
 
 function App() {
@@ -19,13 +17,13 @@ function App() {
 				initialValues={{
 					user: {
 						name: {
-							ccc: 'ces',
+							ccc: '312312',
 						},
 					},
 				}}>
 				{show ? (
-					<FormField name={['user', 'name', 'ccc']} preserve={false}>
-						<input placeholder="请输入问题" />
+					<FormField name={['user', 'name', 'ccc']}>
+						<input />
 					</FormField>
 				) : (
 					<>321321</>

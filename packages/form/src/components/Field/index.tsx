@@ -21,6 +21,9 @@ const Field = ({
 	disabled,
 	editable,
 	validateTrigger,
+	trigger = 'onChange',
+	valuePropName = 'value',
+	renderPreview,
 	...props
 }: FieldProps) => {
 	const formContext = useContext(FormContext);
@@ -100,16 +103,18 @@ const Field = ({
 			rules,
 			normalize,
 			internalName,
-			trigger = 'onChange',
+			editable,
+			disabled,
 			validateTrigger = formContext.validateTrigger,
-			valuePropName = 'value',
 			getValueFromEvent,
 		} = fieldInstance.current;
-
 		const value = formContext.getFieldValue(internalName);
-
+		if (!editable && renderPreview) {
+			return renderPreview(value);
+		}
 		const control: FieldInjectProps = {
 			...props,
+			disabled,
 			[valuePropName]: value,
 		};
 		/** proxy trigger */
