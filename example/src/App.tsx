@@ -22,15 +22,15 @@ function App() {
 					},
 				}}>
 				{show ? (
-					<FormField name={['user', 'name', 'ccc']}>
-						<input />
+					<FormField name={['user', 'name', 'ccc']} label="年龄">
+						<input placeholder="年龄1" />
 					</FormField>
 				) : (
 					<>321321</>
 				)}
 				<Test />
 				<FormField name={['tags', 0, 'name']}>
-					<input placeholder="年龄" />
+					<input placeholder="名称" />
 				</FormField>
 				<button type="submit">提交</button>
 				<button type="reset">重置</button>

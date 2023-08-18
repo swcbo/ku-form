@@ -5,6 +5,8 @@ export interface FormBasicProps {
 	disabled?: boolean;
 	colon?: boolean;
 	preserve?: boolean;
+	className?: string;
+	style?: React.CSSProperties;
 	validateTrigger?: string | string[];
 }
 

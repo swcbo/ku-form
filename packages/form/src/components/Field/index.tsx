@@ -13,6 +13,8 @@ import {
 } from '@hedone/form-core';
 import { cloneElement, isValidElement, memo, useContext, useEffect, useRef } from 'react';
 import { containsNamePath } from '../../plugins/namePathUtils';
+import LabelView from '../LabelView';
+import './index.css';
 
 const Field = ({
 	children,
@@ -20,22 +22,27 @@ const Field = ({
 	preserve,
 	disabled,
 	editable,
+	label,
+	noStyle,
 	validateTrigger,
 	trigger = 'onChange',
 	valuePropName = 'value',
 	renderPreview,
+	style,
+	className,
 	...props
 }: FieldProps) => {
 	const formContext = useContext(FormContext);
 	const scopeContext = useContext(FieldContext);
 	const [update] = useForceUpdate();
 	const { dispatch, registerField } = formContext.getInternalHooks();
+	const internalName = props.name
+		? [...getNamePath(scopeContext.prefixName), ...getNamePath(props.name)]
+		: [];
 	const fieldOptions = {
-		internalName: props.name
-			? [...getNamePath(scopeContext.prefixName), ...getNamePath(props.name)]
-			: [],
+		internalName,
 		disabled: disabled ?? scopeContext.props.disabled ?? formContext.disabled ?? false,
-		colon: formContext.colon ?? scopeContext.props.colon ?? props.colon ?? true,
+		colon: props.colon ?? formContext.colon ?? scopeContext.props.colon ?? true,
 		editable: editable ?? scopeContext.props.editable ?? formContext.editable ?? true,
 		preserve: preserve ?? scopeContext.props.preserve ?? formContext.preserve ?? true,
 		validateTrigger:
@@ -160,13 +167,19 @@ const Field = ({
 			return children;
 		}
 	};
-
 	return (
 		<FieldContext.Provider
 			value={{
 				...scopeContext,
 			}}>
-			<div className="form-field">{WrapperChild()}</div>
+			{noStyle ? (
+				WrapperChild()
+			) : (
+				<div className={`form-field ${className}`} style={style}>
+					{label && <LabelView label={label} colon={fieldOptions.colon} />}
+					{WrapperChild()}
+				</div>
+			)}
 		</FieldContext.Provider>
 	);
 };
