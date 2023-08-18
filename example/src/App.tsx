@@ -15,6 +15,7 @@ function App() {
 			<Form
 				onFinish={console.log}
 				form={form}
+				layout="inline"
 				initialValues={{
 					user: {
 						name: {

@@ -60,6 +60,7 @@ const Form = <T extends Store = Store>(
 				value={
 					{
 						...internalFormInstance,
+						...otherProps,
 						colon,
 						editable,
 						disabled,

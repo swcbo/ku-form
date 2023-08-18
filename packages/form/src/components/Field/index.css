@@ -1,8 +1,25 @@
-.form-field{
+.form-field {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     margin-bottom: 8px;
     vertical-align: top;
     font-size: 14px;
+}
+
+.form-field-horizontal {
+    display: flex;
+    flex-direction: row;
+}
+
+.form-field-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.form-field-inline {
+    display: inline-flex;
+    flex-direction: row;
+    margin-inline-end: 16px;
 }

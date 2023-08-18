@@ -33,6 +33,8 @@ const Field = ({
 	renderPreview,
 	style,
 	className = '',
+	layout,
+	labelAlign,
 	...props
 }: FieldProps) => {
 	const formContext = useContext(FormContext);
@@ -48,6 +50,9 @@ const Field = ({
 		colon: props.colon ?? formContext.colon ?? scopeContext.props.colon ?? true,
 		editable: editable ?? scopeContext.props.editable ?? formContext.editable ?? true,
 		preserve: preserve ?? scopeContext.props.preserve ?? formContext.preserve ?? true,
+		layout: layout ?? scopeContext.props.layout ?? formContext.layout ?? 'horizontal',
+		labelAlign:
+			labelAlign ?? scopeContext.props.labelAlign ?? formContext.labelAlign ?? 'right',
 		validateTrigger:
 			validateTrigger ??
 			scopeContext.props.validateTrigger ??
@@ -105,10 +110,10 @@ const Field = ({
 						}
 						break;
 					case 'valueUpdate':
-						if (info.source === 'external' && prevValue !== curValue) {
-							mate.current.errors = [];
-						}
 						if ((!namePathList || namePathMatch) && valueChange) {
+							if (info.source === 'external') {
+								mate.current.errors = [];
+							}
 							mate.current.touched = true;
 							update();
 						}
@@ -119,6 +124,7 @@ const Field = ({
 						break;
 					case 'reset':
 						if ((!namePathList || namePathMatch) && valueChange) {
+							mate.current.errors = [];
 							mate.current.touched = false;
 							update();
 							onReset?.();
@@ -200,8 +206,16 @@ const Field = ({
 			{noStyle ? (
 				WrapperChild()
 			) : (
-				<div className={`form-field ${className}`} style={style}>
-					{label && <LabelView label={label} colon={fieldOptions.colon} />}
+				<div
+					className={`form-field ${`form-field-${fieldOptions.layout}`} ${className}`}
+					style={style}>
+					{label && (
+						<LabelView
+							label={label}
+							colon={fieldOptions.layout !== 'vertical' && fieldOptions.colon}
+							labelAlign={fieldOptions.labelAlign}
+						/>
+					)}
 					<FieldControl errors={mate.current.errors}>{WrapperChild()}</FieldControl>
 				</div>
 			)}

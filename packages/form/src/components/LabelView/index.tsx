@@ -1,11 +1,17 @@
 import { FieldProps } from '../../types/field';
 import './index.css';
 
-interface LabelViewProps extends Pick<FieldProps, 'label' | 'colon'> {}
-const LabelView = ({ label, colon }: LabelViewProps) => {
+interface LabelViewProps extends Pick<FieldProps, 'label' | 'colon' | 'labelAlign'> {}
+const LabelView = ({ label, colon, labelAlign: textAlign }: LabelViewProps) => {
 	return (
 		<div className={'form-field-label'}>
-			<label className={!colon ? 'form-field-no-colon' : ''}>{label}</label>
+			<label
+				className={!colon ? 'form-field-no-colon' : ''}
+				style={{
+					textAlign,
+				}}>
+				{label}
+			</label>
 		</div>
 	);
 };

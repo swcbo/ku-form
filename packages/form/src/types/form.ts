@@ -8,6 +8,8 @@ export interface FormBasicProps {
 	className?: string;
 	style?: React.CSSProperties;
 	validateTrigger?: string | string[];
+	layout?: 'horizontal' | 'vertical' | 'inline';
+	labelAlign?: 'left' | 'right';
 }
 
 export interface FormContextStore<T extends Store = Store>
@@ -18,7 +20,6 @@ export interface FormProps<T extends Store>
 	extends FormBasicProps,
 		Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit' | 'children'>,
 		Callbacks<T> {
-	layout?: 'horizontal' | 'vertical' | 'inline';
 	initialValues?: Partial<T>;
 	onValuesChange?: (changedValues: Partial<T>, values: T) => void;
 	form?: FormInstance<T>;

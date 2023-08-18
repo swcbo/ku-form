@@ -1,10 +1,10 @@
-.form-field-label{
-    display:  inline-block;
+.form-field-label {
     white-space: nowrap;
     vertical-align: middle;
     overflow: hidden;
 }
-.form-field-label label{
+
+.form-field-label label {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -13,7 +13,7 @@
     font-size: 14px;
 }
 
-.form-field-label label::after{
+.form-field-label label::after {
     content: ":";
     position: relative;
     margin-block: 0;
@@ -21,9 +21,6 @@
     margin-inline-end: 8px;
 }
 
-.form-field-label .form-field-no-colon::after{
+.form-field-label .form-field-no-colon::after {
     content: "";
 }
-
-
-
