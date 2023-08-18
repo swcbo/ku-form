@@ -13,6 +13,7 @@ function App() {
 	return (
 		<>
 			<Form
+				onFinish={console.log}
 				form={form}
 				initialValues={{
 					user: {
@@ -22,7 +23,19 @@ function App() {
 					},
 				}}>
 				{show ? (
-					<FormField name={['user', 'name', 'ccc']} label="年龄">
+					<FormField
+						name={['user', 'name', 'ccc']}
+						label="年龄"
+						rules={[
+							{
+								required: true,
+								message: '请输入年龄',
+							},
+							{
+								required: true,
+								message: '请输入2年龄',
+							},
+						]}>
 						<input placeholder="年龄1" />
 					</FormField>
 				) : (

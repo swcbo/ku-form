@@ -13,7 +13,7 @@ import {
 	Store,
 	StoreValue,
 	UpdateAction,
-	ValidateErrorEntity,
+	ValidateError,
 	ValidateParams,
 	WatchCallBack,
 } from '../type';
@@ -299,14 +299,14 @@ class Form<T extends Store> {
 		options,
 		...other
 	}: ValidateParams = {}) => {
-		const promiseList: Promise<ValidateErrorEntity<StoreValue>>[] = [];
+		const promiseList: Promise<ValidateError | undefined>[] = [];
 		const collection = {
 			nameList,
 			scopeName,
 		};
 		const entityList = getFieldEntitiesByCollection(collection, this.#fieldEntities);
 		entityList.forEach((entity) => {
-			if (entity.props?.rules && entity.props.rules.length > 0 && entity.validate) {
+			if (entity.validate) {
 				promiseList.push(
 					entity.validate({
 						...options,
@@ -315,30 +315,19 @@ class Form<T extends Store> {
 				);
 			}
 		});
-		const returnPromise = Promise.allSettled(promiseList);
-
-		// TODO: compare last promise
-
+		const returnPromise = Promise.all(promiseList);
 		return returnPromise
 			.then((validates) => {
-				// const errorFields = validates.filter((item) => item.status === 'rejected');
-				// const values = this.getFieldsValue(collection);
-				// if (errorFields.length > 0) {
-				// 	const error = new Error('Fields validate error', {
-				// 		cause: {
-				// 			values,
-				// 			errorFields,
-				// 		},
-				// 	});
-				// 	return Promise.reject(error);
-				// }
-				const errors = validates.filter((item) => item.status === 'rejected');
 				const values = this.getFieldsValue(collection);
-				if (errors.length > 0) {
-					return Promise.reject({
-						values,
-						errorFields: errors,
+				const errorFields = validates.filter((v) => v);
+				if (errorFields.length > 0) {
+					const error = new Error('Fields validate error', {
+						cause: {
+							values,
+							errorFields,
+						},
 					});
+					return Promise.reject(error);
 				}
 				return values;
 			})

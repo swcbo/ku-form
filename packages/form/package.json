@@ -24,7 +24,8 @@
   "author": "swcbo",
   "license": "ISC",
   "dependencies": {
-    "@hedone/form-core": "workspace:*"
+    "@hedone/form-core": "workspace:*",
+    "async-validator": "^4.2.5"
   },
   "devDependencies": {
     "@types/react": "*",

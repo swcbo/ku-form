@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -169,9 +165,6 @@ importers:
 
   packages/core:
     dependencies:
-      async-validator:
-        specifier: ^4.2.5
-        version: 4.2.5
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -194,6 +187,9 @@ importers:
       '@hedone/form-core':
         specifier: workspace:*
         version: link:../core
+      async-validator:
+        specifier: ^4.2.5
+        version: 4.2.5
       react:
         specifier: '*'
         version: 18.2.0
@@ -11375,3 +11371,7 @@ packages:
   /zwitch@1.0.5:
     resolution: {integrity: sha512-V50KMwwzqJV0NpZIZFwfOD5/lyny3WlSzRiXgA0G7VUnRlqttta1L6UQIHzd6EuBY/cHGfwTIck7w1yH6Q5zUw==}
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

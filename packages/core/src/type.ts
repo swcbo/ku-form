@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-import { Rule } from 'async-validator';
 import { ISubscribeFunType } from './plugins/observer';
 export type InternalNamePath = (string | number)[];
 export type NamePath = string | number | InternalNamePath;
@@ -55,9 +53,14 @@ export interface FormInstance<T extends Store = Store> {
 	submit: () => void;
 }
 
+export interface ValidateError {
+	name: InternalNamePath;
+	errors: string[];
+}
+
 export interface ValidateErrorEntity<T extends StoreValue> {
 	values: T;
-	errorFields: { name: InternalNamePath; errors: string[] }[];
+	errorFields: ValidateError[];
 	outOfDate: boolean;
 }
 
@@ -97,7 +100,6 @@ export interface InternalFormInstance<T extends Store = Store>
 export interface FormInternalField {
 	name?: NamePath;
 	dependency?: Dependency[];
-	rules?: Rule[];
 	initialValue?: StoreValue;
 	list?: FormInternalField[];
 	fieldType?: 'scope';
@@ -119,7 +121,7 @@ export interface FieldEntity {
 	isFieldTouched?: () => boolean;
 	getNamePath: () => InternalNamePath;
 	isPreserve: () => boolean | undefined;
-	validate?: (options?: ValidateOptions) => Promise<ValidateErrorEntity<StoreValue>>;
+	validate?: (options?: ValidateOptions) => Promise<ValidateError | undefined>;
 	getMeta?: () => Meta;
 	props?: FormInternalField;
 }

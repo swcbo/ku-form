@@ -2,7 +2,7 @@ import useForceUpdate from '../../hooks/useForceUpdate';
 import FieldContext from '../../context/FieldContext';
 import FormContext from '../../context/FormContext';
 import useRefUpdate from '../../hooks/useRefUpdate';
-import { EventArgs, FieldProps } from '../../types/field';
+import { EventArgs, FieldMate, FieldProps } from '../../types/field';
 import { getEventDefaultValue } from '../../utils/valueUtils';
 import {
 	FieldInjectProps,
@@ -15,6 +15,8 @@ import { cloneElement, isValidElement, memo, useContext, useEffect, useRef } fro
 import { containsNamePath } from '../../plugins/namePathUtils';
 import LabelView from '../LabelView';
 import './index.css';
+import { validateRule } from '../../utils/validateUtils';
+import FieldControl from '../FieldControl';
 
 const Field = ({
 	children,
@@ -29,7 +31,7 @@ const Field = ({
 	valuePropName = 'value',
 	renderPreview,
 	style,
-	className,
+	className = '',
 	...props
 }: FieldProps) => {
 	const formContext = useContext(FormContext);
@@ -55,8 +57,9 @@ const Field = ({
 		...props,
 		...fieldOptions,
 	});
-	const mate = useRef({
+	const mate = useRef<FieldMate>({
 		touched: false,
+		errors: [],
 	});
 
 	const finalContext = Object.assign({}, scopeContext);
@@ -70,6 +73,21 @@ const Field = ({
 			isFieldTouched: () => mate.current.touched,
 			getNamePath: () => fieldInstance.current.internalName,
 			isPreserve: () => fieldInstance.current.preserve,
+			validate: async (options) => {
+				const { rules, internalName } = fieldInstance.current;
+				const validate =
+					rules &&
+					(await validateRule(
+						formContext.getFieldValue(internalName),
+						fieldInstance.current,
+					));
+
+				if (!options?.validateOnly) {
+					mate.current.errors = validate?.errors || [];
+					update();
+				}
+				return validate;
+			},
 			onStoreChange: (action) => {
 				const { info, namePathList, prevStore } = action;
 				const { internalName, onReset } = fieldInstance.current;
@@ -82,6 +100,9 @@ const Field = ({
 					case 'clearValidate':
 						break;
 					case 'valueUpdate':
+						if (info.source === 'external' && prevValue !== curValue) {
+							mate.current.errors = [];
+						}
 						if ((!namePathList || namePathMatch) && valueChange) {
 							mate.current.touched = true;
 							update();
@@ -177,7 +198,7 @@ const Field = ({
 			) : (
 				<div className={`form-field ${className}`} style={style}>
 					{label && <LabelView label={label} colon={fieldOptions.colon} />}
-					{WrapperChild()}
+					<FieldControl errors={mate.current.errors}>{WrapperChild()}</FieldControl>
 				</div>
 			)}
 		</FieldContext.Provider>
