@@ -12,11 +12,12 @@ import {
 	getValue,
 } from '@hedone/form-core';
 import { cloneElement, isValidElement, memo, useContext, useEffect, useRef } from 'react';
-import { containsNamePath } from '../../plugins/namePathUtils';
+import { containsNamePath } from '../../utils/namePathUtils';
 import LabelView from '../LabelView';
 import './index.css';
 import { validateRule } from '../../utils/validateUtils';
 import FieldControl from '../FieldControl';
+import { isFunction } from '../../utils';
 
 const Field = ({
 	children,
@@ -98,6 +99,10 @@ const Field = ({
 				const valueChange = prevValue !== curValue;
 				switch (info.type) {
 					case 'clearValidate':
+						if (mate.current.errors.length) {
+							mate.current.errors = [];
+							update();
+						}
 						break;
 					case 'valueUpdate':
 						if (info.source === 'external' && prevValue !== curValue) {
@@ -178,8 +183,7 @@ const Field = ({
 				}
 			};
 		});
-		const isFunction = typeof children === 'function';
-		if (isFunction) {
+		if (isFunction(children)) {
 			return children(control, formContext);
 		} else if (isValidElement(children)) {
 			return cloneElement(children, control);
