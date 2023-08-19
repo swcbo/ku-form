@@ -43,14 +43,14 @@ const FormField = ({
 	const [update] = useForceUpdate();
 	const { dispatch, registerField } = formContext.getInternalHooks();
 	const internalName = name
-		? [...getNamePath(fieldContext.name), ...getNamePath(name)]
+		? [...getNamePath(fieldContext.prefixName), ...getNamePath(name)]
 		: undefined;
 	const fieldOptions = {
 		name,
 		rules,
 		internalName,
 		disabled: disabled ?? fieldContext.disabled ?? formContext.disabled ?? false,
-		colon: props.colon ?? formContext.colon ?? fieldContext.colon ?? true,
+		colon: props.colon ?? fieldContext.colon ?? formContext.colon ?? true,
 		editable: editable ?? fieldContext.editable ?? formContext.editable ?? true,
 		preserve: preserve ?? fieldContext.preserve ?? formContext.preserve ?? true,
 		layout: layout ?? fieldContext.layout ?? formContext.layout ?? 'horizontal',
@@ -134,10 +134,10 @@ const FormField = ({
 						break;
 				}
 			},
-			groupName: getNamePath(fieldContext.name),
+			groupNames: fieldContext.groupNames || [],
 			props: fieldInstance.current,
 		});
-	}, [fieldContext.name, fieldInstance, formContext, registerField, update]);
+	}, [fieldContext.groupNames, fieldInstance, formContext, registerField, update]);
 
 	const WrapperChild = () => {
 		const {

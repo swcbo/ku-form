@@ -1,8 +1,8 @@
-import { memo, useContext, useRef } from 'react';
+import { memo, useContext } from 'react';
 import { FormGroupProps } from '../../types/group';
 import FieldContext from '../../context/FieldContext';
 import FormField from '../FormField';
-import { InternalNamePath, getNamePath } from '@hedone/form-core';
+import { getNamePath } from '@hedone/form-core';
 
 const FormGroup = ({
 	name,
@@ -13,11 +13,8 @@ const FormGroup = ({
 	nameToPreFix,
 	...props
 }: FormGroupProps) => {
-	const fieldContext = useContext(FieldContext);
-	const internalName = useRef<InternalNamePath>();
-	internalName.current = name
-		? [...getNamePath(fieldContext.name), ...(nameToPreFix ? getNamePath(name) : [])]
-		: undefined;
+	const { prefixName: names = [], groupNames = [], ...reset } = useContext(FieldContext);
+	const prefixName = [...names, ...(nameToPreFix ? getNamePath(name) : [])];
 
 	const wrapperChild = (
 		<div
@@ -34,9 +31,10 @@ const FormGroup = ({
 	return (
 		<FieldContext.Provider
 			value={{
-				...fieldContext,
+				...reset,
 				...props,
-				name: internalName.current,
+				groupNames: [...groupNames, `${name}`],
+				prefixName,
 			}}>
 			{wrapperChild}
 		</FieldContext.Provider>

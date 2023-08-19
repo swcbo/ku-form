@@ -57,11 +57,12 @@ class Form<T extends Store> {
 	private registerField = (entity: FieldEntity) => {
 		const namePath = entity.getNamePath();
 		if (namePath) {
-			if (entity.groupName) {
-				const map = this.#groupMap.get(`${entity.groupName}`) || new Map();
+			entity.groupNames.forEach((groupName) => {
+				const map = this.#groupMap.get(groupName) || new Map();
 				map.set(`${namePath}`, entity);
-				this.#groupMap.set(`${entity.groupName}`, map);
-			}
+				this.#groupMap.set(groupName, map);
+			});
+
 			this.#fieldEntities.set(`${namePath}`, entity);
 			const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
 			if (entity.props?.initialValue) {
@@ -76,12 +77,12 @@ class Form<T extends Store> {
 			}
 			return () => {
 				this.#fieldEntities.delete(`${namePath}`);
-				if (entity.groupName) {
-					const map = this.#groupMap.get(`${entity.groupName}`);
+				entity.groupNames.forEach((groupName) => {
+					const map = this.#groupMap.get(groupName);
 					if (map) {
 						map.delete(`${namePath}`);
 					}
-				}
+				});
 				unSubscribe();
 				if (!this.isMergedPreserve(entity.isPreserve())) {
 					if (namePath) {
@@ -215,9 +216,10 @@ class Form<T extends Store> {
 		if (nameCollection?.getStoreAll) {
 			return this.#store;
 		}
-		const entityList = nameCollection
+		const entityList = !nameCollection
 			? [...this.#fieldEntities.values()]
-			: getFieldEntitiesByCollection(nameCollection, this.#fieldEntities);
+			: getFieldEntitiesByCollection(nameCollection, this.#fieldEntities, this.#groupMap);
+
 		return entityList.reduce<Partial<T>>((pre, { getNamePath }) => {
 			const name = getNamePath();
 			if (!name) return pre;
@@ -252,6 +254,7 @@ class Form<T extends Store> {
 		const nameList = getFieldEntitiesByCollection(
 			nameCollection,
 			this.#fieldEntities,
+			this.#groupMap,
 		).map(({ getNamePath }) => getNamePath());
 		nameList.forEach((name) => {
 			if (name) {
@@ -269,7 +272,11 @@ class Form<T extends Store> {
 	};
 
 	private isFieldsTouched = (nameCollection?: Omit<NameCollection, 'getStoreAll'>) => {
-		const entityList = getFieldEntitiesByCollection(nameCollection, this.#fieldEntities);
+		const entityList = getFieldEntitiesByCollection(
+			nameCollection,
+			this.#fieldEntities,
+			this.#groupMap,
+		);
 		return entityList.some((entity) => entity.isFieldTouched?.());
 	};
 

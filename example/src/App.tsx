@@ -12,19 +12,9 @@ function App() {
 
 	return (
 		<>
-			<Form
-				onFinish={console.log}
-				form={form}
-				layout="inline"
-				initialValues={{
-					user: {
-						name: {
-							ccc: '312312',
-						},
-					},
-				}}>
+			<Form onFinish={console.log} form={form} layout="inline">
 				{show ? (
-					<FormGroup name="group" nameToPreFix>
+					<FormGroup name="group">
 						<FormField
 							name={['user', 'name', 'ccc']}
 							label="年龄"
@@ -113,6 +103,16 @@ function App() {
 					});
 				}}>
 				校验组
+			</div>
+			<div
+				onClick={() => {
+					console.log(
+						form.getFieldsValue({
+							groupName: 'group',
+						}),
+					);
+				}}>
+				获取组的值
 			</div>
 		</>
 	);

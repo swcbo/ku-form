@@ -122,7 +122,7 @@ export interface FieldEntity {
 	validate?: (options?: ValidateOptions) => Promise<ValidateError | undefined>;
 	getMeta?: () => Meta;
 	props?: FormInternalField;
-	groupName?: InternalNamePath;
+	groupNames: string[];
 }
 
 // ==================== value change ====================

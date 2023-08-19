@@ -31,5 +31,6 @@ export interface FieldInternalField extends FormFieldProps {
 	internalName: InternalNamePath;
 }
 export interface FieldInstance extends FormBasicProps {
-	name?: InternalNamePath;
+	groupNames?: string[];
+	prefixName?: InternalNamePath;
 }
