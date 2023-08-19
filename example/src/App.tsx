@@ -12,9 +12,9 @@ function App() {
 
 	return (
 		<>
-			<Form onFinish={console.log} form={form} layout="inline">
+			<Form onFinish={console.log} form={form} layout="horizontal">
 				{show ? (
-					<FormGroup name="group">
+					<FormGroup name="group1" nameToPreFix layout="vertical">
 						<FormField
 							name={['user', 'name', 'ccc']}
 							label="年龄"
@@ -23,10 +23,6 @@ function App() {
 									required: true,
 									message: '请输入年龄',
 								},
-								{
-									required: true,
-									message: '请输入2年龄',
-								},
 							]}>
 							<input placeholder="年龄1" />
 						</FormField>
@@ -34,9 +30,9 @@ function App() {
 				) : (
 					<>321321</>
 				)}
-				312312312312
+				22
 				<Test />
-				<FormField name={['tags', 0, 'name']}>
+				<FormField name={['tags', 0, 'name']} label="名称">
 					<input placeholder="名称" />
 				</FormField>
 				<button type="submit">提交</button>
@@ -99,7 +95,7 @@ function App() {
 			<div
 				onClick={() => {
 					form.validateFields({
-						groupName: 'group',
+						groupName: 'group2',
 					});
 				}}>
 				校验组
@@ -107,8 +103,15 @@ function App() {
 			<div
 				onClick={() => {
 					console.log(
+						'group1',
 						form.getFieldsValue({
-							groupName: 'group',
+							groupName: 'group1',
+						}),
+					);
+					console.log(
+						'group2',
+						form.getFieldsValue({
+							groupName: 'group2',
 						}),
 					);
 				}}>

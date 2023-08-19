@@ -4,6 +4,7 @@ import useInitFun from '../../hooks/useInit';
 import { FormContextStore, FormProps, FormRef } from '../../types/form';
 import { InternalFormInstance, Store } from '@hedone/form-core';
 import { forwardRef, memo, useCallback, useImperativeHandle } from 'react';
+import './index.css';
 
 const Form = <T extends Store = Store>(
 	{
@@ -15,10 +16,11 @@ const Form = <T extends Store = Store>(
 		disabled = false,
 		initialValues,
 		validateTrigger = 'onChange',
-		layout,
+		layout = 'horizontal',
 		onFinish,
 		onFinishFailed,
 		onValuesChange,
+		className,
 		...otherProps
 	}: FormProps<T>,
 	ref: React.Ref<FormRef<T>>,
@@ -56,7 +58,11 @@ const Form = <T extends Store = Store>(
 		[formInstance, otherProps],
 	);
 	return (
-		<form {...otherProps} onSubmit={onSubmit} onReset={onReset}>
+		<form
+			{...otherProps}
+			className={`form-${layout} ${className}`}
+			onSubmit={onSubmit}
+			onReset={onReset}>
 			<FormContext.Provider
 				value={
 					{

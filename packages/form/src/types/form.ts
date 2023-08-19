@@ -8,13 +8,8 @@ export interface FormBasicProps {
 	className?: string;
 	style?: React.CSSProperties;
 	validateTrigger?: string | string[];
-	layout?: 'horizontal' | 'vertical' | 'inline';
 	labelAlign?: 'left' | 'right';
 }
-
-export interface FormContextStore<T extends Store = Store>
-	extends InternalFormInstance<T>,
-		FormBasicProps {}
 
 export interface FormProps<T extends Store>
 	extends FormBasicProps,
@@ -25,6 +20,11 @@ export interface FormProps<T extends Store>
 	form?: FormInstance<T>;
 	Component?: string;
 	children?: ReactNode;
+	layout?: 'horizontal' | 'vertical' | 'inline';
 }
+
+export interface FormContextStore<T extends Store = Store>
+	extends InternalFormInstance<T>,
+		FormProps<T> {}
 
 export type FormRef<T extends Store> = FormInstance<T>;

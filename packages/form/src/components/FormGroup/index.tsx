@@ -3,6 +3,8 @@ import { FormGroupProps } from '../../types/group';
 import FieldContext from '../../context/FieldContext';
 import FormField from '../FormField';
 import { getNamePath } from '@hedone/form-core';
+import FormContext from '../../context/FormContext';
+import '../Form/index.css';
 
 const FormGroup = ({
 	name,
@@ -13,15 +15,18 @@ const FormGroup = ({
 	nameToPreFix,
 	...props
 }: FormGroupProps) => {
-	const { prefixName: names = [], groupNames = [], ...reset } = useContext(FieldContext);
+	const formContext = useContext(FormContext);
+	const {
+		prefixName: names = [],
+		groupNames = [],
+		layout,
+		...reset
+	} = useContext(FieldContext);
 	const prefixName = [...names, ...(nameToPreFix ? getNamePath(name) : [])];
+	const internalLayout = props.layout ?? layout ?? formContext.layout;
 
 	const wrapperChild = (
-		<div
-			{...{
-				style,
-				className,
-			}}>
+		<div style={style} className={`form-${layout} ${className}`}>
 			{columns?.map((v, index) => (
 				<FormField {...v} key={`field_${v.name}_${index}`} />
 			))}
@@ -33,6 +38,7 @@ const FormGroup = ({
 			value={{
 				...reset,
 				...props,
+				layout: internalLayout,
 				groupNames: [...groupNames, `${name}`],
 				prefixName,
 			}}>

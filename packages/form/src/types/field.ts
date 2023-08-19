@@ -7,7 +7,7 @@ import {
 	StoreValue,
 } from '@hedone/form-core';
 import { ReactNode } from 'react';
-import { FormBasicProps } from './form';
+import { FormBasicProps, FormProps } from './form';
 export type EventArgs = StoreValue[];
 export type FieldMate = {
 	errors: string[];
@@ -30,7 +30,7 @@ export interface FormFieldProps extends FormInternalField, FormBasicProps {
 export interface FieldInternalField extends FormFieldProps {
 	internalName: InternalNamePath;
 }
-export interface FieldInstance extends FormBasicProps {
+export interface FieldInstance extends FormBasicProps, Pick<FormProps<Store>, 'layout'> {
 	groupNames?: string[];
 	prefixName?: InternalNamePath;
 }

@@ -4,6 +4,7 @@
     box-sizing: border-box;
     margin-bottom: 8px;
     vertical-align: top;
+
     font-size: 14px;
 }
 
@@ -12,16 +13,12 @@
     flex-direction: row;
 }
 
-.form-field-vertical {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
 .form-field-vertical  label{
     padding-bottom: 6px;
 }
 
 .form-field-inline {
-    display: inline-flex;
+    display: flex;
+    flex-flow: row wrap;
     margin-inline-end: 16px;
 }

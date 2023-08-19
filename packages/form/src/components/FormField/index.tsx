@@ -32,7 +32,6 @@ const FormField = ({
 	renderPreview,
 	style,
 	className = '',
-	layout,
 	rules,
 	name,
 	labelAlign,
@@ -53,7 +52,7 @@ const FormField = ({
 		colon: props.colon ?? fieldContext.colon ?? formContext.colon ?? true,
 		editable: editable ?? fieldContext.editable ?? formContext.editable ?? true,
 		preserve: preserve ?? fieldContext.preserve ?? formContext.preserve ?? true,
-		layout: layout ?? fieldContext.layout ?? formContext.layout ?? 'horizontal',
+		layout: fieldContext.layout ?? formContext.layout,
 		labelAlign:
 			labelAlign ?? fieldContext.labelAlign ?? formContext.labelAlign ?? 'right',
 		validateTrigger:
