@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { FieldProps } from '../../types/field';
 import './index.css';
 
-interface LabelViewProps extends Pick<FieldProps, 'label' | 'colon' | 'labelAlign'> {}
-const LabelView = ({ label, colon, labelAlign: textAlign }: LabelViewProps) => {
+interface FieldLabelProps extends Pick<FieldProps, 'label' | 'colon' | 'labelAlign'> {}
+const FieldLabel = ({ label, colon, labelAlign: textAlign }: FieldLabelProps) => {
 	return (
 		<div className={'form-field-label'}>
 			<label
@@ -15,4 +16,4 @@ const LabelView = ({ label, colon, labelAlign: textAlign }: LabelViewProps) => {
 		</div>
 	);
 };
-export default LabelView;
+export default memo(FieldLabel);

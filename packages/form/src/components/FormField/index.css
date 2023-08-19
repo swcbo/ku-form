@@ -17,9 +17,11 @@
     flex-direction: column;
     align-items: flex-start;
 }
+.form-field-vertical  label{
+    padding-bottom: 6px;
+}
 
 .form-field-inline {
     display: inline-flex;
-    flex-direction: row;
     margin-inline-end: 16px;
 }

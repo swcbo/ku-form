@@ -1,4 +1,4 @@
-import Form, { FormField, useForm, useWatch } from '@hedone/form';
+import Form, { FormField, FormGroup, useForm, useWatch } from '@hedone/form';
 import { useState } from 'react';
 import './App.css';
 const Test = () => {
@@ -24,24 +24,27 @@ function App() {
 					},
 				}}>
 				{show ? (
-					<FormField
-						name={['user', 'name', 'ccc']}
-						label="年龄"
-						rules={[
-							{
-								required: true,
-								message: '请输入年龄',
-							},
-							{
-								required: true,
-								message: '请输入2年龄',
-							},
-						]}>
-						<input placeholder="年龄1" />
-					</FormField>
+					<FormGroup name="group" nameToPreFix>
+						<FormField
+							name={['user', 'name', 'ccc']}
+							label="年龄"
+							rules={[
+								{
+									required: true,
+									message: '请输入年龄',
+								},
+								{
+									required: true,
+									message: '请输入2年龄',
+								},
+							]}>
+							<input placeholder="年龄1" />
+						</FormField>
+					</FormGroup>
 				) : (
 					<>321321</>
 				)}
+				312312312312
 				<Test />
 				<FormField name={['tags', 0, 'name']}>
 					<input placeholder="名称" />
@@ -102,6 +105,14 @@ function App() {
 					);
 				}}>
 				查看是否修改
+			</div>
+			<div
+				onClick={() => {
+					form.validateFields({
+						groupName: 'group',
+					});
+				}}>
+				校验组
 			</div>
 		</>
 	);

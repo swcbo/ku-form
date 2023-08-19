@@ -15,6 +15,7 @@ const Form = <T extends Store = Store>(
 		disabled = false,
 		initialValues,
 		validateTrigger = 'onChange',
+		layout,
 		onFinish,
 		onFinishFailed,
 		onValuesChange,
@@ -61,6 +62,7 @@ const Form = <T extends Store = Store>(
 					{
 						...internalFormInstance,
 						...otherProps,
+						layout,
 						colon,
 						editable,
 						disabled,

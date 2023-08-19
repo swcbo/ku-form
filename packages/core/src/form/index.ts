@@ -25,7 +25,7 @@ class Form<T extends Store> {
 	#store: T = {} as T;
 	#initialValues: T = {} as T;
 	#fieldEntities: Map<string, FieldEntity> = new Map();
-	#scopeMap: Map<string, FieldEntity> = new Map();
+	#groupMap: Map<string, Map<string, FieldEntity>> = new Map();
 	#observer = new Observer<T>();
 	#preserve?: boolean;
 	#callbacks: Callbacks<T> = {};
@@ -55,44 +55,41 @@ class Form<T extends Store> {
 	};
 
 	private registerField = (entity: FieldEntity) => {
-		const isScope = entity.props?.fieldType === 'scope';
-		if (isScope) {
-			if (!entity.props?.name) {
-				console.warn('Scope field must have a name.');
-				return () => void 0;
+		const namePath = entity.getNamePath();
+		if (namePath) {
+			if (entity.groupName) {
+				const map = this.#groupMap.get(`${entity.groupName}`) || new Map();
+				map.set(`${namePath}`, entity);
+				this.#groupMap.set(`${entity.groupName}`, map);
 			}
-			const scopePath = `${entity.props.name}`;
-			this.#scopeMap.set(scopePath, entity);
-			return () => {
-				this.#scopeMap.delete(scopePath);
-			};
-		} else {
-			const namePath = entity.getNamePath();
 			this.#fieldEntities.set(`${namePath}`, entity);
 			const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
-			if (namePath.length) {
-				if (entity.props?.initialValue) {
-					const formInitialValue = this.getInitialValue(namePath);
-					if (formInitialValue !== undefined) {
-						console.warn('Form already set initial value, field can not overwrite it.');
-					} else {
-						this.setFieldValue(namePath, entity.props.initialValue);
-					}
+			if (entity.props?.initialValue) {
+				const formInitialValue = this.getInitialValue(namePath);
+				if (formInitialValue !== undefined) {
+					console.warn('Form already set initial value, field can not overwrite it.');
 				} else {
-					this.triggerWatch([entity.getNamePath()]);
+					this.setFieldValue(namePath, entity.props.initialValue);
 				}
+			} else {
+				this.triggerWatch([namePath]);
 			}
 			return () => {
 				this.#fieldEntities.delete(`${namePath}`);
+				if (entity.groupName) {
+					const map = this.#groupMap.get(`${entity.groupName}`);
+					if (map) {
+						map.delete(`${namePath}`);
+					}
+				}
 				unSubscribe();
 				if (!this.isMergedPreserve(entity.isPreserve())) {
-					const namePath = entity.getNamePath();
 					if (namePath) {
 						const defaultValue = this.getInitialValue(namePath);
 						set(this.#store, namePath, defaultValue);
 					}
 				} else {
-					this.triggerWatch([entity.getNamePath()]);
+					this.triggerWatch([namePath]);
 				}
 			};
 		}
@@ -295,16 +292,20 @@ class Form<T extends Store> {
 
 	private validateFields = async ({
 		nameList,
-		scopeName,
+		groupName,
 		options,
 		...other
 	}: ValidateParams = {}) => {
 		const promiseList: Promise<ValidateError | undefined>[] = [];
 		const collection = {
 			nameList,
-			scopeName,
+			groupName,
 		};
-		const entityList = getFieldEntitiesByCollection(collection, this.#fieldEntities);
+		const entityList = getFieldEntitiesByCollection(
+			collection,
+			this.#fieldEntities,
+			this.#groupMap,
+		);
 		entityList.forEach((entity) => {
 			if (entity.validate) {
 				promiseList.push(

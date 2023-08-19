@@ -2,6 +2,7 @@
     white-space: nowrap;
     vertical-align: middle;
     overflow: hidden;
+    flex:1;
 }
 
 .form-field-label label {
@@ -9,9 +10,10 @@
     display: inline-flex;
     align-items: center;
     max-width: 100%;
-    height: 32px;
+    max-height: 32px;
     font-size: 14px;
 }
+
 
 .form-field-label label::after {
     content: ":";

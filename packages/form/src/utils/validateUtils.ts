@@ -1,9 +1,9 @@
-import { StoreValue } from '@hedone/form-core';
+import { InternalNamePath, StoreValue } from '@hedone/form-core';
 import Schema, { Rule } from 'async-validator';
-import { FieldInternalField } from '../types/field';
 export const validateRule = async (
 	value: StoreValue,
-	{ rules = [], internalName }: FieldInternalField,
+	rules: Rule[] = [],
+	internalName: InternalNamePath,
 ) => {
 	const validator = new Schema({
 		name: rules as Rule,

@@ -2,7 +2,7 @@ import useForceUpdate from '../../hooks/useForceUpdate';
 import FieldContext from '../../context/FieldContext';
 import FormContext from '../../context/FormContext';
 import useRefUpdate from '../../hooks/useRefUpdate';
-import { EventArgs, FieldMate, FieldProps } from '../../types/field';
+import { EventArgs, FieldMate, FormFieldProps } from '../../types/field';
 import { getEventDefaultValue } from '../../utils/valueUtils';
 import {
 	FieldInjectProps,
@@ -13,15 +13,14 @@ import {
 } from '@hedone/form-core';
 import { cloneElement, isValidElement, memo, useContext, useEffect, useRef } from 'react';
 import { containsNamePath } from '../../utils/namePathUtils';
-import LabelView from '../LabelView';
+import LabelView from '../FieldLabel';
 import './index.css';
 import { validateRule } from '../../utils/validateUtils';
 import FieldControl from '../FieldControl';
 import { isFunction } from '../../utils';
 
-const Field = ({
+const FormField = ({
 	children,
-	fieldType,
 	preserve,
 	disabled,
 	editable,
@@ -34,28 +33,32 @@ const Field = ({
 	style,
 	className = '',
 	layout,
+	rules,
+	name,
 	labelAlign,
 	...props
-}: FieldProps) => {
+}: FormFieldProps) => {
 	const formContext = useContext(FormContext);
-	const scopeContext = useContext(FieldContext);
+	const fieldContext = useContext(FieldContext);
 	const [update] = useForceUpdate();
 	const { dispatch, registerField } = formContext.getInternalHooks();
-	const internalName = props.name
-		? [...getNamePath(scopeContext.prefixName), ...getNamePath(props.name)]
-		: [];
+	const internalName = name
+		? [...getNamePath(fieldContext.name), ...getNamePath(name)]
+		: undefined;
 	const fieldOptions = {
+		name,
+		rules,
 		internalName,
-		disabled: disabled ?? scopeContext.props.disabled ?? formContext.disabled ?? false,
-		colon: props.colon ?? formContext.colon ?? scopeContext.props.colon ?? true,
-		editable: editable ?? scopeContext.props.editable ?? formContext.editable ?? true,
-		preserve: preserve ?? scopeContext.props.preserve ?? formContext.preserve ?? true,
-		layout: layout ?? scopeContext.props.layout ?? formContext.layout ?? 'horizontal',
+		disabled: disabled ?? fieldContext.disabled ?? formContext.disabled ?? false,
+		colon: props.colon ?? formContext.colon ?? fieldContext.colon ?? true,
+		editable: editable ?? fieldContext.editable ?? formContext.editable ?? true,
+		preserve: preserve ?? fieldContext.preserve ?? formContext.preserve ?? true,
+		layout: layout ?? fieldContext.layout ?? formContext.layout ?? 'horizontal',
 		labelAlign:
-			labelAlign ?? scopeContext.props.labelAlign ?? formContext.labelAlign ?? 'right',
+			labelAlign ?? fieldContext.labelAlign ?? formContext.labelAlign ?? 'right',
 		validateTrigger:
 			validateTrigger ??
-			scopeContext.props.validateTrigger ??
+			fieldContext.validateTrigger ??
 			formContext.validateTrigger ??
 			'onChange',
 	};
@@ -68,12 +71,6 @@ const Field = ({
 		errors: [],
 	});
 
-	const finalContext = Object.assign({}, scopeContext);
-	if (fieldType === 'scope') {
-		finalContext.prefixName = fieldInstance.current.internalName;
-		finalContext.props = fieldOptions;
-	}
-
 	useEffect(() => {
 		return registerField({
 			isFieldTouched: () => mate.current.touched,
@@ -81,11 +78,13 @@ const Field = ({
 			isPreserve: () => fieldInstance.current.preserve,
 			validate: async (options) => {
 				const { rules, internalName } = fieldInstance.current;
+				if (!internalName) return;
 				const validate =
 					rules &&
 					(await validateRule(
 						formContext.getFieldValue(internalName),
-						fieldInstance.current,
+						fieldInstance.current.rules,
+						internalName,
 					));
 
 				if (!options?.validateOnly) {
@@ -97,6 +96,9 @@ const Field = ({
 			onStoreChange: (action) => {
 				const { info, namePathList, prevStore } = action;
 				const { internalName, onReset } = fieldInstance.current;
+				if (!internalName) {
+					return;
+				}
 				const prevValue = getValue(prevStore, internalName);
 				const curValue = formContext.getFieldValue(internalName);
 				const namePathMatch =
@@ -132,10 +134,10 @@ const Field = ({
 						break;
 				}
 			},
+			groupName: getNamePath(fieldContext.name),
 			props: fieldInstance.current,
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [fieldContext.name, fieldInstance, formContext, registerField, update]);
 
 	const WrapperChild = () => {
 		const {
@@ -147,48 +149,51 @@ const Field = ({
 			validateTrigger = formContext.validateTrigger,
 			getValueFromEvent,
 		} = fieldInstance.current;
-		const value = formContext.getFieldValue(internalName);
-		if (!editable && renderPreview) {
-			return renderPreview(value);
-		}
 		const control: FieldInjectProps = {
 			...props,
 			disabled,
-			[valuePropName]: value,
 		};
-		/** proxy trigger */
-		const originTrigger = control[trigger] as (...args: EventArgs) => void;
-		control[trigger] = (...args: EventArgs) => {
-			let currentValue: StoreValue;
-			if (getValueFromEvent) {
-				currentValue = getValueFromEvent(...args);
-			} else {
-				currentValue = getEventDefaultValue(valuePropName, ...args);
+		if (internalName) {
+			const value = formContext.getFieldValue(internalName);
+			if (!editable && renderPreview) {
+				return renderPreview(value);
 			}
-			normalize?.(currentValue, value, formContext.getFieldsValue());
-			dispatch({
-				type: 'updateValue',
-				namePath: internalName,
-				value: currentValue,
-				source: 'trigger',
-			});
-			originTrigger?.(...args);
-		};
-		/** proxy validate */
-		const validateTriggerList: string[] = toArray(validateTrigger) || [];
-		validateTriggerList.forEach((triggerName) => {
-			const originTrigger = control[triggerName] as (...args: EventArgs) => void;
-			control[triggerName] = (...args: EventArgs) => {
-				originTrigger?.(...args);
-				if (rules && rules.length) {
-					dispatch({
-						type: 'validateField',
-						namePath: internalName,
-						triggerName,
-					});
+			control[valuePropName] = value;
+			/** proxy trigger */
+			const originTrigger = control[trigger] as (...args: EventArgs) => void;
+			control[trigger] = (...args: EventArgs) => {
+				let currentValue: StoreValue;
+				if (getValueFromEvent) {
+					currentValue = getValueFromEvent(...args);
+				} else {
+					currentValue = getEventDefaultValue(valuePropName, ...args);
 				}
+				normalize?.(currentValue, value, formContext.getFieldsValue());
+				dispatch({
+					type: 'updateValue',
+					namePath: internalName,
+					value: currentValue,
+					source: 'trigger',
+				});
+				originTrigger?.(...args);
 			};
-		});
+			/** proxy validate */
+			const validateTriggerList: string[] = toArray(validateTrigger) || [];
+			validateTriggerList.forEach((triggerName) => {
+				const originTrigger = control[triggerName] as (...args: EventArgs) => void;
+				control[triggerName] = (...args: EventArgs) => {
+					originTrigger?.(...args);
+					if (rules && rules.length) {
+						dispatch({
+							type: 'validateField',
+							namePath: internalName,
+							triggerName,
+						});
+					}
+				};
+			});
+		}
+
 		if (isFunction(children)) {
 			return children(control, formContext);
 		} else if (isValidElement(children)) {
@@ -201,7 +206,7 @@ const Field = ({
 	return (
 		<FieldContext.Provider
 			value={{
-				...scopeContext,
+				...fieldContext,
 			}}>
 			{noStyle ? (
 				WrapperChild()
@@ -222,4 +227,4 @@ const Field = ({
 		</FieldContext.Provider>
 	);
 };
-export default memo(Field);
+export default memo(FormField);

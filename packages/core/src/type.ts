@@ -8,7 +8,7 @@ export type Store = Record<string, StoreValue>;
 
 export type NameCollection = {
 	nameList?: NamePath[];
-	scopeName?: NamePath;
+	groupName?: NamePath;
 	getStoreAll?: boolean; // 获取store里面的所有值
 };
 
@@ -80,7 +80,7 @@ export type WatchCallBack = (data: {
 	namePathList: InternalNamePath[];
 }) => void;
 export interface InternalHooks<T extends Store> {
-	registerField: (entity: FieldEntity) => () => void;
+	registerField: (entity: FieldEntity) => (() => void) | undefined;
 	setInitialValues: (values: T, init: boolean) => void;
 	setPreserve: (preserve?: boolean) => void;
 	getInitialValue: (namePath: InternalNamePath) => T;
@@ -101,8 +101,6 @@ export interface FormInternalField {
 	name?: NamePath;
 	dependency?: Dependency[];
 	initialValue?: StoreValue;
-	list?: FormInternalField[];
-	fieldType?: 'scope';
 }
 
 // ==================== dependency ====================
@@ -119,11 +117,12 @@ export interface FieldInjectProps {
 export interface FieldEntity {
 	onStoreChange: ISubscribeFunType<ValueChangeParams<Store>>;
 	isFieldTouched?: () => boolean;
-	getNamePath: () => InternalNamePath;
+	getNamePath: () => InternalNamePath | undefined;
 	isPreserve: () => boolean | undefined;
 	validate?: (options?: ValidateOptions) => Promise<ValidateError | undefined>;
 	getMeta?: () => Meta;
 	props?: FormInternalField;
+	groupName?: InternalNamePath;
 }
 
 // ==================== value change ====================

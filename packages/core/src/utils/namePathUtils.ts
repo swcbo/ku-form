@@ -7,14 +7,13 @@ export const compareNamePath = (namePath1?: NamePath, namePath2?: NamePath) => {
 
 /** Return field entities from the collection. If the collection is not passed, return all field entities. */
 export const getFieldEntitiesByCollection = (
-	{ scopeName, nameList }: NameCollection = {},
+	{ groupName, nameList }: NameCollection = {},
 	entities: Map<string, FieldEntity>,
+	groupMap: Map<string, Map<string, FieldEntity>> = new Map(),
 ): FieldEntity[] => {
 	let namePathSet: Set<FieldEntity> = new Set();
-	if (scopeName) {
-		const nameList = [...entities.values()].filter((item) =>
-			compareNamePath(item.getNamePath(), scopeName),
-		);
+	if (groupName) {
+		const nameList = groupMap.get(`${groupName}`)?.values();
 		namePathSet = new Set(nameList);
 	}
 	if (nameList) {
@@ -26,7 +25,7 @@ export const getFieldEntitiesByCollection = (
 			});
 		});
 	}
-	if (!scopeName && !nameList) {
+	if (!groupName && !nameList) {
 		namePathSet = new Set(entities.values());
 	}
 	return Array.from(namePathSet);

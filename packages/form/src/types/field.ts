@@ -3,7 +3,6 @@ import {
 	FormInstance,
 	FormInternalField,
 	InternalNamePath,
-	NamePath,
 	Store,
 	StoreValue,
 } from '@hedone/form-core';
@@ -14,7 +13,7 @@ export type FieldMate = {
 	errors: string[];
 	touched: boolean;
 };
-export interface FieldProps extends FormInternalField, FormBasicProps {
+export interface FormFieldProps extends FormInternalField, FormBasicProps {
 	required?: boolean | (() => boolean);
 	valuePropName?: string;
 	trigger?: string;
@@ -28,10 +27,9 @@ export interface FieldProps extends FormInternalField, FormBasicProps {
 	onReset?: () => void;
 	children?: ReactNode | ((props: Store, form: FormInstance) => ReactNode);
 }
-export interface FieldInternalField extends FieldProps {
+export interface FieldInternalField extends FormFieldProps {
 	internalName: InternalNamePath;
 }
-export interface FieldInstance {
-	prefixName?: NamePath;
-	props: FormBasicProps;
+export interface FieldInstance extends FormBasicProps {
+	name?: InternalNamePath;
 }
