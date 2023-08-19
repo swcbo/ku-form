@@ -2,9 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    margin-bottom: 8px;
-    vertical-align: top;
-
+    margin-bottom: 12px;
     font-size: 14px;
 }
 
@@ -13,8 +11,8 @@
     flex-direction: row;
 }
 
-.form-field-vertical  label{
-    padding-bottom: 6px;
+.form-field-vertical .form-field-label {
+    padding-bottom: 4px;
 }
 
 .form-field-inline {

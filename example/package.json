@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hedone/form": "workspace:*",
+    "antd": "^5.8.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

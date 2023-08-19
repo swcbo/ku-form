@@ -61,7 +61,6 @@ export interface ValidateError {
 export interface ValidateErrorEntity<T extends StoreValue> {
 	values: T;
 	errorFields: ValidateError[];
-	outOfDate: boolean;
 }
 
 export interface Callbacks<T extends Store> {

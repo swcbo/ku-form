@@ -1,28 +1,24 @@
-
-.form-field-required .form-field-label::before{
+.form-field-required .form-field-label::before {
     display: inline-block;
     margin-inline-end: 4px;
     color: #ff4d4f;
     font-size: 14px;
-    font-family: SimSun,sans-serif;
+    font-family: SimSun, sans-serif;
     line-height: 1;
     content: "*";
 
 }
+
 .form-field-label {
     white-space: nowrap;
-    vertical-align: middle;
-    overflow: hidden;
-    flex:1;
 }
 
 .form-field-label label {
     position: relative;
-    display: inline-flex;
-    align-items: center;
     max-width: 100%;
     max-height: 32px;
     font-size: 14px;
+    vertical-align: -webkit-baseline-middle;
 }
 
 

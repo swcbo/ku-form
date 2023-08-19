@@ -1,21 +1,33 @@
 import Form, { FormField, FormGroup, useForm, useWatch } from '@hedone/form';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import './App.css';
-import FieldContext from '@hedone/form/src/context/FieldContext';
+import { Radio } from 'antd';
+import CaseList from './cases';
 const Test = () => {
 	const name = useWatch(['user', 'name']);
-	const fieldContext = useContext(FieldContext);
-	console.log(fieldContext, name, 'fieldContext');
 	return <>{name?.ccc}</>;
 };
 
 function App() {
 	const [form] = useForm();
 	const [show, setShow] = useState(true);
-
+	const [currentCase, setCurrentCase] = useState(CaseList[0].title);
+	const Component = CaseList.find((item) => item.title === currentCase)?.Component;
 	return (
 		<>
-			<Form onFinish={console.log} form={form} layout="horizontal">
+			<Radio.Group value={currentCase} onChange={(e) => setCurrentCase(e.target.value)}>
+				{CaseList.map((item) => (
+					<Radio.Button value={item.title} key={item.title}>
+						{item.title}
+					</Radio.Button>
+				))}
+			</Radio.Group>
+			{Component && <Component />}
+			<Form
+				onFinish={console.log}
+				form={form}
+				layout="horizontal"
+				onFinishFailed={console.log}>
 				{show ? (
 					<FormGroup name="group1" layout="vertical" nameToPreFix>
 						<FormField

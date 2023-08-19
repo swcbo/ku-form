@@ -1,4 +1,10 @@
-import { FormInstance, Store, Callbacks, InternalFormInstance } from '@hedone/form-core';
+import {
+	FormInstance,
+	Store,
+	Callbacks,
+	InternalFormInstance,
+	StoreValue,
+} from '@hedone/form-core';
 import { ReactNode } from 'react';
 export interface FormBasicProps {
 	editable?: boolean;
@@ -10,17 +16,18 @@ export interface FormBasicProps {
 	validateTrigger?: string | string[];
 	labelAlign?: 'left' | 'right';
 }
+export type LayoutType = 'horizontal' | 'vertical' | 'inline';
 
-export interface FormProps<T extends Store>
+export interface FormProps<T extends Store = Store>
 	extends FormBasicProps,
 		Omit<React.FormHTMLAttributes<HTMLFormElement>, 'onSubmit' | 'children'>,
-		Callbacks<T> {
+		Omit<Callbacks<T>, 'onValuesChange'> {
 	initialValues?: Partial<T>;
-	onValuesChange?: (changedValues: Partial<T>, values: T) => void;
+	onValuesChange?: (changedValues: StoreValue, values: T) => void;
 	form?: FormInstance<T>;
 	Component?: string;
 	children?: ReactNode;
-	layout?: 'horizontal' | 'vertical' | 'inline';
+	layout?: LayoutType;
 }
 
 export interface FormContextStore<T extends Store = Store>

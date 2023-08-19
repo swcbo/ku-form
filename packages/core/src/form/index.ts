@@ -204,7 +204,11 @@ class Form<T extends Store> {
 		const { onValuesChange } = this.#callbacks;
 		if (onValuesChange) {
 			const changedValues = getValue(this.#store, namePath);
-			onValuesChange(changedValues, this.getFieldsValue() as T, source);
+			onValuesChange(
+				set({}, namePath, changedValues),
+				this.getFieldsValue() as T,
+				source,
+			);
 		}
 	};
 
@@ -290,7 +294,7 @@ class Form<T extends Store> {
 			})
 			.catch((errorInfo) => {
 				if (onFinishFailed) {
-					onFinishFailed(errorInfo);
+					onFinishFailed(errorInfo.cause);
 				}
 			});
 	};
@@ -324,24 +328,20 @@ class Form<T extends Store> {
 			}
 		});
 		const returnPromise = Promise.all(promiseList);
-		return returnPromise
-			.then((validates) => {
-				const values = this.getFieldsValue(collection);
-				const errorFields = validates.filter((v) => v);
-				if (errorFields.length > 0) {
-					const error = new Error('Fields validate error', {
-						cause: {
-							values,
-							errorFields,
-						},
-					});
-					return Promise.reject(error);
-				}
-				return values;
-			})
-			.catch((e) => {
-				console.log(e);
-			}) as Promise<Partial<T>>;
+		return returnPromise.then((validates) => {
+			const values = this.getFieldsValue(collection);
+			const errorFields = validates.filter((v) => v);
+			if (errorFields.length > 0) {
+				const error = new Error('Fields validate error', {
+					cause: {
+						values,
+						errorFields,
+					},
+				});
+				throw error;
+			}
+			return values;
+		});
 	};
 }
 export default Form;
