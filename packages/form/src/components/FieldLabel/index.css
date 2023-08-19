@@ -1,3 +1,14 @@
+
+.form-field-required .form-field-label::before{
+    display: inline-block;
+    margin-inline-end: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun,sans-serif;
+    line-height: 1;
+    content: "*";
+
+}
 .form-field-label {
     white-space: nowrap;
     vertical-align: middle;

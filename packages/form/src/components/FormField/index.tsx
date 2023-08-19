@@ -44,6 +44,10 @@ const FormField = ({
 	const internalName = name
 		? [...getNamePath(fieldContext.prefixName), ...getNamePath(name)]
 		: undefined;
+	const mate = useRef<FieldMate>({
+		touched: false,
+		errors: [],
+	});
 	const fieldOptions = {
 		name,
 		rules,
@@ -60,14 +64,11 @@ const FormField = ({
 			fieldContext.validateTrigger ??
 			formContext.validateTrigger ??
 			'onChange',
+		mate: mate.current,
 	};
 	const fieldInstance = useRefUpdate({
 		...props,
 		...fieldOptions,
-	});
-	const mate = useRef<FieldMate>({
-		touched: false,
-		errors: [],
 	});
 
 	useEffect(() => {
@@ -202,16 +203,22 @@ const FormField = ({
 			return children;
 		}
 	};
+
+	const required = rules?.some((v) => v.required);
+
 	return (
 		<FieldContext.Provider
 			value={{
 				...fieldContext,
+				...fieldOptions,
 			}}>
 			{noStyle ? (
 				WrapperChild()
 			) : (
 				<div
-					className={`form-field ${`form-field-${fieldOptions.layout}`} ${className}`}
+					className={`form-field ${`form-field-${fieldOptions.layout}`}  ${
+						required ? 'form-field-required' : ''
+					} ${className} `}
 					style={style}>
 					{label && (
 						<LabelView

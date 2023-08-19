@@ -1,4 +1,4 @@
-import { Rule } from 'async-validator';
+import { RuleItem } from 'async-validator';
 import {
 	FormInstance,
 	FormInternalField,
@@ -18,7 +18,7 @@ export interface FormFieldProps extends FormInternalField, FormBasicProps {
 	valuePropName?: string;
 	trigger?: string;
 	renderPreview?: (value: StoreValue) => ReactNode;
-	rules?: Rule[];
+	rules?: RuleItem[];
 	label?: ReactNode;
 	noStyle?: boolean;
 	onValueChange?: (value: StoreValue) => void;

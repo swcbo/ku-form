@@ -193,6 +193,9 @@ importers:
       react:
         specifier: '*'
         version: 18.2.0
+      scroll-into-view-if-needed:
+        specifier: ^3.0.10
+        version: 3.0.10
     devDependencies:
       '@types/react':
         specifier: '*'
@@ -4951,6 +4954,10 @@ packages:
       - supports-color
     dev: false
 
+  /compute-scroll-into-view@3.0.3:
+    resolution: {integrity: sha512-nadqwNxghAGTamwIqQSG433W6OADZx2vCo3UXHNrzTRHK/htu+7+L0zhjEoaeaQVNAi3YgqWDv8+tzf0hRfR+A==}
+    dev: false
+
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
@@ -9678,6 +9685,12 @@ packages:
       ajv: 8.12.0
       ajv-formats: 2.1.1(ajv@8.12.0)
       ajv-keywords: 5.1.0(ajv@8.12.0)
+    dev: false
+
+  /scroll-into-view-if-needed@3.0.10:
+    resolution: {integrity: sha512-t44QCeDKAPf1mtQH3fYpWz8IM/DyvHLjs8wUvvwMYxk5moOqCzrMSxK6HQVD0QVmVjXFavoFIPRVrMuJPKAvtg==}
+    dependencies:
+      compute-scroll-into-view: 3.0.3
     dev: false
 
   /search-insights@2.6.0:

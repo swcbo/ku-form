@@ -1,8 +1,11 @@
 import Form, { FormField, FormGroup, useForm, useWatch } from '@hedone/form';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import './App.css';
+import FieldContext from '@hedone/form/src/context/FieldContext';
 const Test = () => {
 	const name = useWatch(['user', 'name']);
+	const fieldContext = useContext(FieldContext);
+	console.log(fieldContext, name, 'fieldContext');
 	return <>{name?.ccc}</>;
 };
 
@@ -14,7 +17,7 @@ function App() {
 		<>
 			<Form onFinish={console.log} form={form} layout="horizontal">
 				{show ? (
-					<FormGroup name="group1" nameToPreFix layout="vertical">
+					<FormGroup name="group1" layout="vertical" nameToPreFix>
 						<FormField
 							name={['user', 'name', 'ccc']}
 							label="年龄"
@@ -30,7 +33,6 @@ function App() {
 				) : (
 					<>321321</>
 				)}
-				22
 				<Test />
 				<FormField name={['tags', 0, 'name']} label="名称">
 					<input placeholder="名称" />
