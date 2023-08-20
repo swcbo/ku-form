@@ -61,8 +61,7 @@ const useWatch = <T extends Store>(
 		oldValue.current = strValue;
 		setValue(value);
 		return cancelWatch;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [internalRef]);
 	return value;
 };
 export default useWatch;

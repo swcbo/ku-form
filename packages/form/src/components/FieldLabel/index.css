@@ -1,4 +1,4 @@
-.form-field-required .form-field-label::before {
+.form-field-required .form-field-label label::before {
     display: inline-block;
     margin-inline-end: 4px;
     color: #ff4d4f;

@@ -35,6 +35,8 @@ const FormField = ({
 	rules,
 	name,
 	labelAlign,
+	labelCol,
+	wrapperCol,
 	...props
 }: FormFieldProps) => {
 	const formContext = useContext(FormContext);
@@ -52,6 +54,8 @@ const FormField = ({
 		name,
 		rules,
 		internalName,
+		labelCol: labelCol ?? fieldContext.labelCol ?? formContext.labelCol,
+		wrapperCol: wrapperCol ?? fieldContext.wrapperCol ?? formContext.wrapperCol,
 		disabled: disabled ?? fieldContext.disabled ?? formContext.disabled ?? false,
 		colon: props.colon ?? fieldContext.colon ?? formContext.colon ?? true,
 		editable: editable ?? fieldContext.editable ?? formContext.editable ?? true,
@@ -223,11 +227,14 @@ const FormField = ({
 					{label && (
 						<LabelView
 							label={label}
+							labelCol={fieldOptions.labelCol}
 							colon={fieldOptions.layout !== 'vertical' && fieldOptions.colon}
 							labelAlign={fieldOptions.labelAlign}
 						/>
 					)}
-					<FieldControl errors={mate.current.errors}>{WrapperChild()}</FieldControl>
+					<FieldControl errors={mate.current.errors} wrapperCol={fieldOptions.wrapperCol}>
+						{WrapperChild()}
+					</FieldControl>
 				</div>
 			)}
 		</FieldContext.Provider>

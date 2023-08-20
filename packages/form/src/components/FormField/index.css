@@ -13,10 +13,16 @@
 
 .form-field-vertical .form-field-label {
     padding-bottom: 4px;
+    text-align: start !important;
 }
 
 .form-field-inline {
     display: flex;
-    flex-flow: row wrap;
     margin-inline-end: 16px;
+}
+
+.form-field-horizontal .form-field-control {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
 }

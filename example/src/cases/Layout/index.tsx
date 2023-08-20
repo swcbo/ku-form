@@ -12,7 +12,7 @@ const LayoutCase: React.FC = () => {
 
 	const formItemLayout =
 		formLayout === 'horizontal'
-			? { labelCol: { span: 4 }, wrapperCol: { span: 14 } }
+			? { labelCol: { span: 6 }, wrapperCol: { span: 16 } }
 			: null;
 
 	const buttonItemLayout =
@@ -23,6 +23,7 @@ const LayoutCase: React.FC = () => {
 			{...formItemLayout}
 			layout={formLayout}
 			form={form}
+			labelAlign="left"
 			onValuesChange={onFormLayoutChange}
 			initialValues={{ layout: formLayout }}
 			style={{ maxWidth: formLayout === 'inline' ? 'none' : 600 }}>

@@ -1,7 +1,7 @@
-import Form, { FormField, FormGroup, useForm, useWatch } from '@hedone/form';
+import { useForm, useWatch } from '@hedone/form';
+import { Radio } from 'antd';
 import { useState } from 'react';
 import './App.css';
-import { Radio } from 'antd';
 import CaseList from './cases';
 const Test = () => {
 	const name = useWatch(['user', 'name']);
@@ -15,7 +15,10 @@ function App() {
 	const Component = CaseList.find((item) => item.title === currentCase)?.Component;
 	return (
 		<>
-			<Radio.Group value={currentCase} onChange={(e) => setCurrentCase(e.target.value)}>
+			<Radio.Group
+				value={currentCase}
+				onChange={(e) => setCurrentCase(e.target.value)}
+				style={{ marginBottom: 12 }}>
 				{CaseList.map((item) => (
 					<Radio.Button value={item.title} key={item.title}>
 						{item.title}
@@ -23,7 +26,7 @@ function App() {
 				))}
 			</Radio.Group>
 			{Component && <Component />}
-			<Form
+			{/* <Form
 				onFinish={console.log}
 				form={form}
 				layout="horizontal"
@@ -51,7 +54,7 @@ function App() {
 				</FormField>
 				<button type="submit">提交</button>
 				<button type="reset">重置</button>
-			</Form>
+			</Form> */}
 			<div
 				onClick={() => {
 					setShow(!show);

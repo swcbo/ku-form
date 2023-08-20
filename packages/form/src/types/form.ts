@@ -15,6 +15,8 @@ export interface FormBasicProps {
 	style?: React.CSSProperties;
 	validateTrigger?: string | string[];
 	labelAlign?: 'left' | 'right';
+	labelCol?: { span?: number; offset?: number };
+	wrapperCol?: { span?: number; offset?: number };
 }
 export type LayoutType = 'horizontal' | 'vertical' | 'inline';
 

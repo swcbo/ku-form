@@ -1,9 +1,14 @@
-.form-item-explain{
+.form-field-control {
+    width: 100%;
+}
+
+.form-item-explain {
     font-size: 14px;
     width: 100%;
     box-sizing: border-box;
 }
-.form-field-explain-error{
+
+.form-field-explain-error {
     color: #ff4d4f;
 
 }
