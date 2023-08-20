@@ -170,6 +170,8 @@ class Form<T extends Store> {
 				this.validateFields({
 					nameList: [namePath],
 					triggerName,
+				}).catch((errorInfo) => {
+					console.warn('form validate error', errorInfo.cause);
 				});
 				break;
 			}
