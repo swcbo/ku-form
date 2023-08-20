@@ -3,14 +3,9 @@ import { Radio } from 'antd';
 import { useState } from 'react';
 import './App.css';
 import CaseList from './cases';
-const Test = () => {
-	const name = useWatch(['user', 'name']);
-	return <>{name?.ccc}</>;
-};
 
 function App() {
 	const [form] = useForm();
-	const [show, setShow] = useState(true);
 	const [currentCase, setCurrentCase] = useState(CaseList[0].title);
 	const Component = CaseList.find((item) => item.title === currentCase)?.Component;
 	return (
@@ -26,41 +21,7 @@ function App() {
 				))}
 			</Radio.Group>
 			{Component && <Component />}
-			{/* <Form
-				onFinish={console.log}
-				form={form}
-				layout="horizontal"
-				onFinishFailed={console.log}>
-				{show ? (
-					<FormGroup name="group1" layout="vertical" nameToPreFix>
-						<FormField
-							name={['user', 'name', 'ccc']}
-							label="年龄"
-							rules={[
-								{
-									required: true,
-									message: '请输入年龄',
-								},
-							]}>
-							<input placeholder="年龄1" />
-						</FormField>
-					</FormGroup>
-				) : (
-					<>321321</>
-				)}
-				<Test />
-				<FormField name={['tags', 0, 'name']} label="名称">
-					<input placeholder="名称" />
-				</FormField>
-				<button type="submit">提交</button>
-				<button type="reset">重置</button>
-			</Form> */}
-			<div
-				onClick={() => {
-					setShow(!show);
-				}}>
-				显示隐藏
-			</div>
+
 			<div
 				onClick={() => {
 					console.log(form.getFieldsValue(), 'form.getFieldsValue()');

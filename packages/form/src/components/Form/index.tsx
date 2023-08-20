@@ -10,22 +10,28 @@ const Form = <T extends Store = Store>(
 	{
 		form,
 		colon = true,
-		children,
 		preserve = true,
 		editable = true,
 		disabled = false,
 		initialValues,
 		validateTrigger = 'onChange',
 		layout = 'horizontal',
-		onFinish,
-		onFinishFailed,
-		onValuesChange,
 		className,
-		...otherProps
+		...reset
 	}: FormProps<T>,
 	ref: React.Ref<FormRef<T>>,
 ) => {
 	const [formInstance] = useForm<T>(form);
+	const {
+		labelCol,
+		wrapperCol,
+		labelAlign,
+		onFinish,
+		onFinishFailed,
+		onValuesChange,
+		children,
+		...formProps
+	} = reset;
 	const internalFormInstance = formInstance as unknown as InternalFormInstance<T>;
 	const { setCallbacks, setPreserve, setInitialValues } =
 		internalFormInstance.getInternalHooks();
@@ -53,13 +59,14 @@ const Form = <T extends Store = Store>(
 		(e: React.FormEvent<HTMLFormElement>) => {
 			e.preventDefault();
 			formInstance.resetFields();
-			otherProps.onReset?.(e);
+			reset.onReset?.(e);
 		},
-		[formInstance, otherProps],
+		[formInstance, reset],
 	);
+
 	return (
 		<form
-			{...otherProps}
+			{...formProps}
 			className={`form-${layout} ${className}`}
 			onSubmit={onSubmit}
 			onReset={onReset}>
@@ -67,12 +74,15 @@ const Form = <T extends Store = Store>(
 				value={
 					{
 						...internalFormInstance,
-						...otherProps,
+						...reset,
 						layout,
 						colon,
 						editable,
 						disabled,
 						preserve,
+						labelCol,
+						labelAlign,
+						wrapperCol,
 						validateTrigger,
 					} as FormContextStore
 				}>

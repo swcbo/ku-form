@@ -1,6 +1,7 @@
 import BasicCase from './Basic';
 import GroupCase from './Group';
 import LayoutCase from './Layout';
+import WatchCase from './Watch';
 
 const CaseList = [
 	{
@@ -14,6 +15,10 @@ const CaseList = [
 	{
 		title: 'Group用法',
 		Component: GroupCase,
+	},
+	{
+		title: 'Watch用法',
+		Component: WatchCase,
 	},
 ];
 export default CaseList;

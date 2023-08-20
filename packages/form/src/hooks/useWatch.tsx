@@ -12,7 +12,7 @@ import FormContext from '../context/FormContext';
 import { getValueAndStringify } from '../utils/valueUtils';
 import useRefUpdate from './useRefUpdate';
 type WatchOption<T extends Store> = {
-	form: FormInstance<T>;
+	form?: FormInstance<T>;
 	preserve?: boolean;
 };
 

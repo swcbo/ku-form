@@ -37,6 +37,7 @@ const FormField = ({
 	labelAlign,
 	labelCol,
 	wrapperCol,
+	initialValue,
 	...props
 }: FormFieldProps) => {
 	const formContext = useContext(FormContext);
@@ -69,8 +70,11 @@ const FormField = ({
 			formContext.validateTrigger ??
 			'onChange',
 		mate: mate.current,
+		initialValue,
 	};
 	const fieldInstance = useRefUpdate({
+		formContext,
+		fieldContext,
 		...props,
 		...fieldOptions,
 	});
@@ -81,15 +85,14 @@ const FormField = ({
 			getNamePath: () => fieldInstance.current.internalName,
 			isPreserve: () => fieldInstance.current.preserve,
 			validate: async (options) => {
-				const { rules, internalName } = fieldInstance.current;
+				const {
+					rules,
+					internalName,
+					formContext: { getFieldValue },
+				} = fieldInstance.current;
 				if (!internalName) return;
 				const validate =
-					rules &&
-					(await validateRule(
-						formContext.getFieldValue(internalName),
-						fieldInstance.current.rules,
-						internalName,
-					));
+					rules && (await validateRule(getFieldValue(internalName), rules, internalName));
 
 				if (!options?.validateOnly) {
 					mate.current.errors = validate?.errors || [];
@@ -99,12 +102,16 @@ const FormField = ({
 			},
 			onStoreChange: (action) => {
 				const { info, namePathList, prevStore } = action;
-				const { internalName, onReset } = fieldInstance.current;
+				const {
+					internalName,
+					onReset,
+					formContext: { getFieldValue },
+				} = fieldInstance.current;
 				if (!internalName) {
 					return;
 				}
 				const prevValue = getValue(prevStore, internalName);
-				const curValue = formContext.getFieldValue(internalName);
+				const curValue = getFieldValue(internalName);
 				const namePathMatch =
 					namePathList && containsNamePath(namePathList, internalName);
 				const valueChange = prevValue !== curValue;
@@ -138,10 +145,10 @@ const FormField = ({
 						break;
 				}
 			},
-			groupNames: fieldContext.groupNames || [],
+			groupNames: fieldInstance.current.fieldContext.groupNames || [],
 			props: fieldInstance.current,
 		});
-	}, [fieldContext.groupNames, fieldInstance, formContext, registerField, update]);
+	}, [fieldInstance, registerField, update]);
 
 	const WrapperChild = () => {
 		const {
