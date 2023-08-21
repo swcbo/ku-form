@@ -28,14 +28,11 @@ const BasicCase: React.FC = () => (
 		<FormField
 			name="remember"
 			valuePropName="checked"
-			// wrapperCol={{ offset: 8, span: 16 }}
-		>
+			wrapperCol={{ offset: 8, span: 16 }}>
 			<Checkbox>Remember me</Checkbox>
 		</FormField>
 
-		<FormField
-		// wrapperCol={{ offset: 8, span: 16 }}
-		>
+		<FormField wrapperCol={{ offset: 8, span: 16 }}>
 			<Button type="primary" htmlType="submit">
 				Submit
 			</Button>

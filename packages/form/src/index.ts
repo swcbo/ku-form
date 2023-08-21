@@ -4,5 +4,7 @@ import useWatch from './hooks/useWatch';
 import FormField from './components/FormField';
 import FormGroup from './components/FormGroup';
 import { LayoutType } from './types/form';
-export { useForm, useWatch, FormField, FormGroup, type LayoutType };
+import FormList from './components/FormList';
+export type { LayoutType };
+export { useForm, useWatch, FormField, FormGroup, FormList };
 export default Form;

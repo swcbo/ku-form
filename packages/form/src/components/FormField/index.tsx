@@ -174,6 +174,7 @@ const FormField = ({
 			const originTrigger = control[trigger] as (...args: EventArgs) => void;
 			control[trigger] = (...args: EventArgs) => {
 				let currentValue: StoreValue;
+
 				if (getValueFromEvent) {
 					currentValue = getValueFromEvent(...args);
 				} else {
@@ -204,13 +205,11 @@ const FormField = ({
 				};
 			});
 		}
-
 		if (isFunction(children)) {
 			return children(control, formContext);
 		} else if (isValidElement(children)) {
 			return cloneElement(children, control);
 		} else {
-			console.warn('children must be function or ReactElement');
 			return children;
 		}
 	};
