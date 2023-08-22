@@ -81,14 +81,17 @@ const FormList = ({ children, onChange, value = [], name }: FormListProps) => {
 		</FieldContext.Provider>
 	);
 };
-type WrapperFormListProps = Pick<FormListProps, 'name' | 'children' | 'initialValue'>;
+type WrapperFormListProps = Pick<
+	FormListProps,
+	'name' | 'children' | 'initialValue' | 'rules'
+>;
 
-const WrapperFormList = ({ name, children, initialValue }: WrapperFormListProps) => {
+const WrapperFormList = ({ children, ...other }: WrapperFormListProps) => {
 	return (
-		<FormField name={name} initialValue={initialValue} noStyle>
+		<FormField noStyle {...other}>
 			{({ value, onChange }) => {
 				return (
-					<FormList name={name} value={value} onChange={onChange}>
+					<FormList name={other.name} value={value} onChange={onChange}>
 						{children}
 					</FormList>
 				);

@@ -14,7 +14,8 @@ export interface FormListData {
 	name: number;
 	key: number;
 }
-export interface FormListProps extends Pick<FormFieldProps, 'name' | 'initialValue'> {
+export interface FormListProps
+	extends Pick<FormFieldProps, 'name' | 'initialValue' | 'rules'> {
 	children: (fields: FormListData[], operation: FormListOperation) => ReactNode;
 	value?: StoreValue[];
 	onChange: (value: StoreValue[]) => void;

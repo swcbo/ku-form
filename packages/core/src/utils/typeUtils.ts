@@ -8,7 +8,7 @@ export const toArray = <T>(value?: T | T[]) => {
 };
 
 export const getNamePath = (path?: NamePath) => {
-	if (!path) return [];
+	if (path === undefined) return [];
 	return toArray(path);
 };
 
