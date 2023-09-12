@@ -222,7 +222,7 @@ const FormField = ({
 				...fieldOptions,
 			}}>
 			{noStyle ? (
-				WrapperChild()
+				<FieldControl errors={mate.current.errors}>{WrapperChild()}</FieldControl>
 			) : (
 				<div
 					className={`form-field ${`form-field-${fieldOptions.layout}`}  ${
