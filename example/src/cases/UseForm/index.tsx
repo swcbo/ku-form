@@ -9,6 +9,9 @@ const UseFormCase = () => {
 				<FormField name="name" label="名称" initialValue="小白">
 					<Input placeholder="请输入" />
 				</FormField>
+				<FormField name="name" label="名称" initialValue="小白1">
+					<Input placeholder="请输入" />
+				</FormField>
 				<FormField name="age" label="年龄">
 					<Input placeholder="请输入" />
 				</FormField>

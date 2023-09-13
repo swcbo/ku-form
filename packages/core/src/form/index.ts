@@ -70,7 +70,8 @@ class Form<T extends Store> {
 				if (formInitialValue !== undefined) {
 					console.warn('Form already set initial value, field can not overwrite it.');
 				} else {
-					this.setFieldValue(namePath, entity.props.initialValue);
+					set(this.#initialValues, namePath, entity.props?.initialValue);
+					this.setFieldValue(namePath, entity.props?.initialValue);
 					this.triggerWatch([namePath]);
 				}
 			} else {
