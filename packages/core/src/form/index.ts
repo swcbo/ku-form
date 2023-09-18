@@ -15,10 +15,11 @@ import {
 	UpdateAction,
 	ValidateError,
 	ValidateParams,
+	ValueUpdateInfo,
 	WatchCallBack,
 } from '../type';
 import { getFieldEntitiesByCollection } from '../utils/namePathUtils';
-import { getValue, setValue } from '../utils/valueUtils';
+import { getValue } from '../utils/valueUtils';
 import { getNamePath } from './../utils/typeUtils';
 
 class Form<T extends Store> {
@@ -71,9 +72,10 @@ class Form<T extends Store> {
 					console.warn('Form already set initial value, field can not overwrite it.');
 				} else {
 					set(this.#initialValues, namePath, entity.props?.initialValue);
-					this.setFieldValue(namePath, entity.props?.initialValue);
 					this.triggerWatch([namePath]);
 				}
+				const currentValue = formInitialValue ?? entity.props?.initialValue;
+				this.internalSetValue(namePath, currentValue, 'register');
 			} else {
 				this.triggerWatch([namePath]);
 			}
@@ -199,13 +201,7 @@ class Form<T extends Store> {
 		source: UpdateAction['source'],
 	) => {
 		const namePath = getNamePath(name);
-		const prevStore = cloneDeep(this.#store);
-		set(this.#store, namePath, value);
-		this.#observer.dispatch({
-			prevStore,
-			info: { type: 'valueUpdate', source: 'internal' },
-			namePathList: [namePath],
-		});
+		this.internalSetValue(namePath, value, 'internal');
 		const { onValuesChange } = this.#callbacks;
 		if (onValuesChange) {
 			const changedValues = getValue(this.#store, namePath);
@@ -218,6 +214,20 @@ class Form<T extends Store> {
 	};
 
 	// =================== field  ===================
+
+	private internalSetValue = (
+		name: NamePath,
+		value: StoreValue,
+		source: ValueUpdateInfo['source'],
+	) => {
+		const prevStore = cloneDeep(this.#store);
+		set(this.#store, name, value);
+		this.#observer.dispatch({
+			prevStore,
+			info: { type: 'valueUpdate', source },
+			namePathList: [name],
+		});
+	};
 
 	private getFieldValue = (name: NamePath) => getValue(this.#store, name);
 
@@ -237,13 +247,7 @@ class Form<T extends Store> {
 	};
 
 	private setFieldValue = (name: NamePath, value: StoreValue) => {
-		const prevStore = cloneDeep(this.#store);
-		setValue(this.#store, name, value);
-		this.#observer.dispatch({
-			prevStore,
-			info: { type: 'valueUpdate', source: 'external' },
-			namePathList: [name],
-		});
+		this.internalSetValue(name, value, 'external');
 	};
 
 	private setFieldsValue = (value: Partial<T>) => {

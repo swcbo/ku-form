@@ -133,9 +133,9 @@ type RemoveInfo = {
 	type: 'remove';
 };
 
-type ValueUpdateInfo = {
+export type ValueUpdateInfo = {
 	type: 'valueUpdate';
-	source: 'internal' | 'external';
+	source: 'internal' | 'external' | 'register';
 };
 
 type DependenciesUpdateInfo = {

@@ -123,6 +123,10 @@ const FormField = ({
 						}
 						break;
 					case 'valueUpdate':
+						if (info.source === 'register') {
+							update();
+							return;
+						}
 						if ((!namePathList || namePathMatch) && valueChange) {
 							if (info.source === 'external') {
 								mate.current.errors = [];
