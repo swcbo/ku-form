@@ -72,14 +72,11 @@ class Form<T extends Store> {
 					console.warn('Form already set initial value, field can not overwrite it.');
 				} else {
 					set(this.#initialValues, namePath, entity.props?.initialValue);
-					this.triggerWatch([namePath]);
 				}
 				const currentValue = formInitialValue ?? entity.props?.initialValue;
 				this.internalSetValue(namePath, currentValue, 'register');
-			} else {
-				this.triggerWatch([namePath]);
 			}
-
+			this.triggerWatch([namePath]);
 			return () => {
 				this.#fieldEntities.delete(`${namePath}`);
 				entity.groupNames.forEach((groupName) => {
