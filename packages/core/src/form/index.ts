@@ -25,7 +25,7 @@ import { getNamePath } from './../utils/typeUtils';
 class Form<T extends Store> {
 	#store: T = {} as T;
 	#initialValues: T = {} as T;
-	#fieldEntities: Map<string, FieldEntity> = new Map();
+	#fieldEntities: FieldEntity[] = [];
 	#groupMap: Map<string, Map<string, FieldEntity>> = new Map();
 	#observer = new Observer<T>();
 	#preserve?: boolean;
@@ -64,7 +64,7 @@ class Form<T extends Store> {
 				this.#groupMap.set(groupName, map);
 			});
 
-			this.#fieldEntities.set(`${namePath}`, entity);
+			this.#fieldEntities.push(entity);
 			const unSubscribe = this.#observer.subscribe(entity.onStoreChange);
 			if (entity.props?.initialValue) {
 				const formInitialValue = this.getInitialValue(namePath);
@@ -72,13 +72,12 @@ class Form<T extends Store> {
 					console.warn('Form already set initial value, field can not overwrite it.');
 				} else {
 					set(this.#initialValues, namePath, entity.props?.initialValue);
+					this.internalSetValue(namePath, entity.props?.initialValue, 'register');
 				}
-				const currentValue = formInitialValue ?? entity.props?.initialValue;
-				this.internalSetValue(namePath, currentValue, 'register');
 			}
 			this.triggerWatch([namePath]);
 			return () => {
-				this.#fieldEntities.delete(`${namePath}`);
+				this.#fieldEntities = this.#fieldEntities.filter((item) => item !== entity);
 				entity.groupNames.forEach((groupName) => {
 					const map = this.#groupMap.get(groupName);
 					if (map) {

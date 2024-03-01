@@ -137,8 +137,6 @@ const FormField = ({
 						break;
 					case 'dependenciesUpdate':
 						break;
-					case 'validate':
-						break;
 					case 'reset':
 						if ((!namePathList || namePathMatch) && valueChange) {
 							mate.current.errors = [];

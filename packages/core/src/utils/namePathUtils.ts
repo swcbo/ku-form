@@ -8,7 +8,7 @@ export const compareNamePath = (namePath1?: NamePath, namePath2?: NamePath) => {
 /** Return field entities from the collection. If the collection is not passed, return all field entities. */
 export const getFieldEntitiesByCollection = (
 	{ groupName, nameList }: NameCollection = {},
-	entities: Map<string, FieldEntity>,
+	entities: FieldEntity[],
 	groupMap: Map<string, Map<string, FieldEntity>> = new Map(),
 ): FieldEntity[] => {
 	let namePathSet: Set<FieldEntity> = new Set();

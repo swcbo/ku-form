@@ -14,7 +14,7 @@ const PreserveTest = () => {
 };
 const WatchCase = () => {
 	const [form] = useForm();
-	const [show, setShow] = useState(true);
+	const [show, setShow] = useState(false);
 	const name = useWatch('name', {
 		form,
 	});
