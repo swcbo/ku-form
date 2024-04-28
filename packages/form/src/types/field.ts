@@ -1,6 +1,5 @@
 import { RuleItem } from 'async-validator';
 import {
-	FormInstance,
 	FormInternalField,
 	InternalNamePath,
 	Store,
@@ -13,11 +12,17 @@ export type FieldMate = {
 	errors: string[];
 	touched: boolean;
 };
+
+export interface RenderFieldProps extends FormBasicProps, Pick<FormFieldProps, 'label'> {
+	value?: StoreValue;
+	onChange?: StoreValue;
+	[key: string]: StoreValue;
+}
 export interface FormFieldProps extends FormInternalField, FormBasicProps {
 	required?: boolean | (() => boolean);
 	valuePropName?: string;
 	trigger?: string;
-	renderPreview?: (value: StoreValue) => ReactNode;
+	renderPreview?: (props: RenderFieldProps) => ReactNode;
 	rules?: RuleItem[];
 	label?: ReactNode;
 	noStyle?: boolean;
@@ -25,7 +30,8 @@ export interface FormFieldProps extends FormInternalField, FormBasicProps {
 	getValueFromEvent?: (...args: EventArgs) => StoreValue;
 	normalize?: (value: StoreValue, prevValue: StoreValue, allValues: Store) => StoreValue;
 	onReset?: () => void;
-	children?: ReactNode | ((props: Store, form: FormInstance) => ReactNode);
+	field?: string;
+	children?: ReactNode | ((props: Store) => ReactNode);
 }
 export interface FieldInternalField extends FormFieldProps {
 	internalName: InternalNamePath;

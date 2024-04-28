@@ -4,8 +4,15 @@ import {
 	Callbacks,
 	InternalFormInstance,
 	StoreValue,
+	NamePath,
 } from '@hedone/form-core';
 import { ReactNode } from 'react';
+
+export interface Dependency {
+	/** default render */
+	type?: 'visible' | 'disabled' | 'options' | 'value' | 'props' | 'render' | string;
+	relates: NamePath[] | ((prefixName: NamePath[]) => NamePath[]);
+}
 export interface FormBasicProps {
 	editable?: boolean;
 	disabled?: boolean;

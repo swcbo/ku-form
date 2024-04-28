@@ -5,6 +5,7 @@ import FormField from './components/FormField';
 import FormGroup from './components/FormGroup';
 import { LayoutType } from './types/form';
 import FormList from './components/FormList';
+import ConfigContext from './context/ConfigContext';
 export type { LayoutType };
-export { useForm, useWatch, FormField, FormGroup, FormList };
+export { useForm, useWatch, FormField, FormGroup, FormList, ConfigContext };
 export default Form;

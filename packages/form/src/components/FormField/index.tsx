@@ -2,15 +2,14 @@ import useForceUpdate from '../../hooks/useForceUpdate';
 import FieldContext from '../../context/FieldContext';
 import FormContext from '../../context/FormContext';
 import useRefUpdate from '../../hooks/useRefUpdate';
-import { EventArgs, FieldMate, FormFieldProps } from '../../types/field';
-import { getEventDefaultValue } from '../../utils/valueUtils';
 import {
-	FieldInjectProps,
-	getNamePath,
-	StoreValue,
-	toArray,
-	getValue,
-} from '@hedone/form-core';
+	EventArgs,
+	FieldMate,
+	FormFieldProps,
+	RenderFieldProps,
+} from '../../types/field';
+import { getEventDefaultValue } from '../../utils/valueUtils';
+import { getNamePath, StoreValue, toArray, getValue } from '@hedone/form-core';
 import { cloneElement, isValidElement, memo, useContext, useEffect, useRef } from 'react';
 import { containsNamePath } from '../../utils/namePathUtils';
 import LabelView from '../FieldLabel';
@@ -18,6 +17,7 @@ import './index.css';
 import { validateRule } from '../../utils/validateUtils';
 import FieldControl from '../FieldControl';
 import { isFunction } from '../../utils';
+import ConfigContext from '../../context/ConfigContext';
 
 const FormField = ({
 	children,
@@ -40,6 +40,7 @@ const FormField = ({
 	initialValue,
 	...props
 }: FormFieldProps) => {
+	const { fieldMap } = useContext(ConfigContext);
 	const formContext = useContext(FormContext);
 	const fieldContext = useContext(FieldContext);
 	const [update] = useForceUpdate();
@@ -159,19 +160,26 @@ const FormField = ({
 			internalName,
 			editable,
 			disabled,
+			field = '',
 			validateTrigger = formContext.validateTrigger,
 			getValueFromEvent,
 		} = fieldInstance.current;
-		const control: FieldInjectProps = {
+		const control: RenderFieldProps = {
 			...props,
 			disabled,
 		};
+		const renderChildren = field ? fieldMap[field].renderFormItem : children;
 		if (internalName) {
 			const value = formContext.getFieldValue(internalName);
-			if (!editable && renderPreview) {
-				return renderPreview(value);
-			}
 			control[valuePropName] = value;
+			if (!editable) {
+				if (renderPreview) {
+					return renderPreview(control);
+				} else if (fieldMap[field]?.renderPreview) {
+					return fieldMap[field]?.renderPreview(control);
+				}
+			}
+
 			/** proxy trigger */
 			const originTrigger = control[trigger] as (...args: EventArgs) => void;
 			control[trigger] = (...args: EventArgs) => {
@@ -207,12 +215,12 @@ const FormField = ({
 				};
 			});
 		}
-		if (isFunction(children)) {
-			return children(control, formContext);
-		} else if (isValidElement(children)) {
-			return cloneElement(children, control);
+		if (isFunction(renderChildren)) {
+			return renderChildren(control);
+		} else if (isValidElement(renderChildren)) {
+			return cloneElement(renderChildren, control);
 		} else {
-			return children;
+			return renderChildren;
 		}
 	};
 	const required = rules?.some((v) => v.required);
