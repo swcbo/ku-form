@@ -12,6 +12,7 @@ export type {
 	FormInternalField,
 	FieldInjectProps,
 	InternalHooks,
+	TDependency,
 } from './type';
 
 export default Form;

@@ -1,3 +1,4 @@
+import { FormFieldProps } from './../../form/src/types/field';
 import { ISubscribeFunType } from './plugins/observer';
 export type InternalNamePath = (string | number)[];
 export type NamePath = string | number | InternalNamePath;
@@ -73,9 +74,9 @@ export interface Callbacks<T extends Store> {
 	onFinishFailed?: (errorInfo: ValidateErrorEntity<T>) => void;
 }
 // ============== internal =====================================
-export type WatchCallBack = (data: {
-	values: Store;
-	allValues: Store;
+export type WatchCallBack = <T extends Store>(data: {
+	values: Partial<T>;
+	allValues: T;
 	namePathList: InternalNamePath[];
 }) => void;
 export interface InternalHooks<T extends Store> {
@@ -98,14 +99,35 @@ export interface InternalFormInstance<T extends Store = Store>
 
 export interface FormInternalField {
 	name?: NamePath;
-	dependency?: Dependency[];
+	dependency?: TDependency[];
 	initialValue?: StoreValue;
 }
 
 // ==================== dependency ====================
-export interface Dependency {
-	type: 'value' | 'visible' | 'disabled';
-}
+export type TDependency = {
+	relates: ((prefixName: NamePath) => NamePath[]) | NamePath[];
+} & (
+	| {
+			setUp: (
+				values: StoreValue[],
+				options: {
+					setProps: (props: FormFieldProps) => void;
+				},
+			) => Promise<boolean | void> | boolean | void;
+	  }
+	| {
+			type: 'visible';
+			setUp: (values: StoreValue[]) => Promise<boolean> | boolean;
+	  }
+	| {
+			type: 'props';
+			setUp: (values: StoreValue[]) => Promise<FormFieldProps> | FormFieldProps;
+	  }
+	| {
+			type: 'value';
+			setUp: (values: StoreValue[]) => Promise<StoreValue> | StoreValue;
+	  }
+);
 
 // ==================== entity ====================
 

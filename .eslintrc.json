@@ -59,9 +59,9 @@
 		],
 		"@typescript-eslint/no-extra-semi": ["warn"],
 		"@typescript-eslint/no-empty-interface": ["off"],
-        // no-use-before-define not work with typescript, so we need to use @typescript-eslint/no-use-before-define instead of it
-        "no-use-before-define": "off",
-        "@typescript-eslint/no-use-before-define": ["error"],
+		// no-use-before-define not work with typescript, so we need to use @typescript-eslint/no-use-before-define instead of it
+		"no-use-before-define": "off",
+		"@typescript-eslint/no-use-before-define": ["error"],
 		// node relation rules
 		"n/no-missing-import": ["off"],
 		"n/no-extraneous-import": [

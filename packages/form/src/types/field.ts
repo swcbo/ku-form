@@ -6,11 +6,13 @@ import {
 	StoreValue,
 } from '@hedone/form-core';
 import { ReactNode } from 'react';
-import { FormBasicProps, FormProps } from './form';
+import { FormBasicProps, FormContextStore, FormProps } from './form';
 export type EventArgs = StoreValue[];
 export type FieldMate = {
 	errors: string[];
 	touched: boolean;
+	visible: boolean;
+	props?: FormFieldProps;
 };
 
 export interface RenderFieldProps extends FormBasicProps, Pick<FormFieldProps, 'label'> {
@@ -34,9 +36,13 @@ export interface FormFieldProps extends FormInternalField, FormBasicProps {
 	children?: ReactNode | ((props: Store) => ReactNode);
 }
 export interface FieldInternalField extends FormFieldProps {
-	internalName: InternalNamePath;
+	internalName?: InternalNamePath;
 }
-export interface FieldInstance extends FormBasicProps, Pick<FormProps<Store>, 'layout'> {
+export interface FieldInstance
+	extends FormBasicProps,
+		Pick<FormProps<Store>, 'layout'>,
+		FieldInternalField {
 	groupNames?: string[];
+	formContext: FormContextStore;
 	prefixName?: InternalNamePath;
 }

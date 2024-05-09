@@ -1,18 +1,8 @@
-import Form, { FormField, ConfigContext } from '@hedone/form';
+import Form, { FormField } from '@hedone/form';
 import { Button, Checkbox, Input } from 'antd';
 
-const BasicCase: React.FC = () => (
-	<ConfigContext.Provider
-		value={{
-			fieldMap: {
-				input: {
-					renderPreview: ({ value }) => {
-						return value;
-					},
-					renderFormItem: (props) => <Input {...props} />,
-				},
-			},
-		}}>
+const BasicCase: React.FC = () => {
+	return (
 		<Form
 			name="basic"
 			labelCol={{ span: 8 }}
@@ -25,11 +15,12 @@ const BasicCase: React.FC = () => (
 			<FormField
 				label="Username"
 				name="username"
-				field="input"
 				editable={false}
+				required
 				initialValue={'系哦啊白'}
-				rules={[{ required: true, message: 'Please input your username!' }]}
-			/>
+				rules={[{ required: true, message: 'Please input your username!' }]}>
+				<Input />
+			</FormField>
 
 			<FormField
 				label="Password"
@@ -51,7 +42,7 @@ const BasicCase: React.FC = () => (
 				</Button>
 			</FormField>
 		</Form>
-	</ConfigContext.Provider>
-);
+	);
+};
 
 export default BasicCase;

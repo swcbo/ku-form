@@ -1,5 +1,5 @@
-import Form from '../../src/form';
-import { Store, InternalNamePath } from '../../src';
+/* eslint-disable @typescript-eslint/no-empty-function */
+import Form, { Store, InternalNamePath } from '../../src';
 let form: Form | undefined;
 beforeEach(() => {
 	form = new Form();

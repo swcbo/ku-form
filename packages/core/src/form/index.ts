@@ -22,7 +22,7 @@ import { getFieldEntitiesByCollection } from '../utils/namePathUtils';
 import { getValue } from '../utils/valueUtils';
 import { getNamePath } from './../utils/typeUtils';
 
-class Form<T extends Store> {
+class Form<T extends Store = Store> {
 	#store: T = {} as T;
 	#initialValues: T = {} as T;
 	#fieldEntities: FieldEntity[] = [];

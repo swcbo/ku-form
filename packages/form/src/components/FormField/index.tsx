@@ -4,6 +4,7 @@ import FormContext from '../../context/FormContext';
 import useRefUpdate from '../../hooks/useRefUpdate';
 import {
 	EventArgs,
+	FieldInstance,
 	FieldMate,
 	FormFieldProps,
 	RenderFieldProps,
@@ -18,6 +19,7 @@ import { validateRule } from '../../utils/validateUtils';
 import FieldControl from '../FieldControl';
 import { isFunction } from '../../utils';
 import ConfigContext from '../../context/ConfigContext';
+import useDependency from '../../hooks/useDependency';
 
 const FormField = ({
 	children,
@@ -30,6 +32,7 @@ const FormField = ({
 	trigger = 'onChange',
 	valuePropName = 'value',
 	renderPreview,
+	dependency,
 	style,
 	className = '',
 	rules,
@@ -51,6 +54,7 @@ const FormField = ({
 	const mate = useRef<FieldMate>({
 		touched: false,
 		errors: [],
+		visible: true,
 	});
 	const fieldOptions = {
 		name,
@@ -72,13 +76,15 @@ const FormField = ({
 			'onChange',
 		mate: mate.current,
 		initialValue,
+		groupNames: fieldContext.groupNames,
 	};
-	const fieldInstance = useRefUpdate({
+	const fieldInstance = useRefUpdate<FieldInstance>({
 		formContext,
-		fieldContext,
 		...props,
 		...fieldOptions,
+		...mate.current.props,
 	});
+	useDependency(fieldInstance, mate, dependency);
 
 	useEffect(() => {
 		return registerField({
@@ -91,7 +97,7 @@ const FormField = ({
 					internalName,
 					formContext: { getFieldValue },
 				} = fieldInstance.current;
-				if (!internalName) return;
+				if (!internalName || !fieldInstance.current.editable) return;
 				const validate =
 					rules && (await validateRule(getFieldValue(internalName), rules, internalName));
 
@@ -148,10 +154,10 @@ const FormField = ({
 						break;
 				}
 			},
-			groupNames: fieldInstance.current.fieldContext.groupNames || [],
+			groupNames: fieldInstance.current.groupNames || [],
 			props: fieldInstance.current,
 		});
-	}, [fieldInstance, registerField, update]);
+	}, [fieldInstance, registerField, update, initialValue, name]);
 
 	const WrapperChild = () => {
 		const {
@@ -223,7 +229,7 @@ const FormField = ({
 			return renderChildren;
 		}
 	};
-	const required = rules?.some((v) => v.required);
+	const required = fieldInstance.current.rules?.some((v) => v.required);
 
 	return (
 		<FieldContext.Provider
@@ -235,10 +241,12 @@ const FormField = ({
 				<FieldControl errors={mate.current.errors}>{WrapperChild()}</FieldControl>
 			) : (
 				<div
-					className={`form-field ${`form-field-${fieldOptions.layout}`}  ${
-						required ? 'form-field-required' : ''
-					} ${className} `}
-					style={style}>
+					className={`${required ? 'form-field-required' : ''}
+					${className} form-field ${`form-field-${fieldOptions.layout}`}`}
+					style={{
+						display: mate.current.visible ? 'block' : 'none',
+						...style,
+					}}>
 					{label && (
 						<LabelView
 							label={label}

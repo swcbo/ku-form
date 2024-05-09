@@ -15,7 +15,7 @@ const Form = <T extends Store = Store>(
 		disabled = false,
 		initialValues,
 		validateTrigger = 'onChange',
-		layout = 'horizontal',
+		layout = 'vertical',
 		className,
 		...reset
 	}: FormProps<T>,
