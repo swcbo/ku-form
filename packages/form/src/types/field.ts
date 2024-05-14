@@ -15,26 +15,36 @@ export type FieldMate = {
 	props?: FormFieldProps;
 };
 
-export interface RenderFieldProps extends FormBasicProps, Pick<FormFieldProps, 'label'> {
+export interface RenderFieldProps<T extends Store>
+	extends FormBasicProps,
+		Pick<FormFieldProps<T>, 'label'> {
 	value?: StoreValue;
 	onChange?: StoreValue;
 	[key: string]: StoreValue;
 }
-export interface FormFieldProps extends FormInternalField, FormBasicProps {
+export interface FormFieldProps<T extends Store = Store>
+	extends FormInternalField,
+		FormBasicProps {
 	required?: boolean | (() => boolean);
 	valuePropName?: string;
 	trigger?: string;
-	renderPreview?: (props: RenderFieldProps) => ReactNode;
+	renderPreview?: (props: RenderFieldProps<T>) => ReactNode;
 	rules?: RuleItem[];
 	label?: ReactNode;
 	noStyle?: boolean;
 	onValueChange?: (value: StoreValue) => void;
 	getValueFromEvent?: (...args: EventArgs) => StoreValue;
-	normalize?: (value: StoreValue, prevValue: StoreValue, allValues: Store) => StoreValue;
+	normalize?: (
+		value: StoreValue,
+		prevValue: StoreValue,
+		allValues: Store,
+	) => StoreValue;
 	onReset?: () => void;
 	field?: string;
-	children?: ReactNode | ((props: Store) => ReactNode);
+	children?: ReactNode | ((p?: T) => ReactNode);
+	fieldProps?: T;
 }
+
 export interface FieldInternalField extends FormFieldProps {
 	internalName?: InternalNamePath;
 }

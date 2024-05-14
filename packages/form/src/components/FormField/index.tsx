@@ -10,7 +10,7 @@ import {
 	RenderFieldProps,
 } from '../../types/field';
 import { getEventDefaultValue } from '../../utils/valueUtils';
-import { getNamePath, StoreValue, toArray, getValue } from '@hedone/form-core';
+import { getNamePath, StoreValue, toArray, getValue, Store } from '@hedone/form-core';
 import { cloneElement, isValidElement, memo, useContext, useEffect, useRef } from 'react';
 import { containsNamePath } from '../../utils/namePathUtils';
 import LabelView from '../FieldLabel';
@@ -21,7 +21,7 @@ import { isFunction } from '../../utils';
 import ConfigContext from '../../context/ConfigContext';
 import useDependency from '../../hooks/useDependency';
 
-const FormField = ({
+const FormField = <T extends Store = Store>({
 	children,
 	preserve,
 	disabled,
@@ -42,7 +42,7 @@ const FormField = ({
 	wrapperCol,
 	initialValue,
 	...props
-}: FormFieldProps) => {
+}: FormFieldProps<T>) => {
 	const { fieldMap } = useContext(ConfigContext);
 	const formContext = useContext(FormContext);
 	const fieldContext = useContext(FieldContext);
@@ -169,9 +169,11 @@ const FormField = ({
 			field = '',
 			validateTrigger = formContext.validateTrigger,
 			getValueFromEvent,
+			fieldProps,
 		} = fieldInstance.current;
-		const control: RenderFieldProps = {
-			...props,
+		const control: RenderFieldProps<T> = {
+			...props.fieldProps,
+			...fieldProps,
 			disabled,
 		};
 		const renderChildren = field ? fieldMap[field].renderFormItem : children;
@@ -222,7 +224,7 @@ const FormField = ({
 			});
 		}
 		if (isFunction(renderChildren)) {
-			return renderChildren(control);
+			return renderChildren(control as T);
 		} else if (isValidElement(renderChildren)) {
 			return cloneElement(renderChildren, control);
 		} else {
@@ -263,4 +265,4 @@ const FormField = ({
 		</FieldContext.Provider>
 	);
 };
-export default memo(FormField);
+export default memo(FormField) as <T extends Store = Store>(props: FormFieldProps<T>) => JSX.Element;

@@ -1,3 +1,6 @@
 {
-	"cSpell.words": ["clsx", "hedone"]
+	"cSpell.words": ["clsx", "hedone"],
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features"
+	}
 }

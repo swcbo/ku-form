@@ -1,6 +1,5 @@
 import Form, { FormField } from '@hedone/form';
 import { Input, Select } from 'antd';
-
 const DependencyCase = () => {
 	return (
 		<Form
@@ -41,12 +40,22 @@ const DependencyCase = () => {
 											message: '请输入名称',
 										},
 									],
+									fieldProps: {
+										placeholder: '请输入xxx',
+									},
 								}
 								: {};
 						},
 					},
+					{
+						type: 'value',
+						relates: ['type'],
+						setUp([type]) {
+							return type === 'input' ? 1 : 2;
+						},
+					},
 				]}>
-				<Input placeholder="请输入" />
+				<Input />
 			</FormField>
 		</Form>
 	);
