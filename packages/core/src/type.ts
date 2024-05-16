@@ -5,7 +5,7 @@ export type NamePath = string | number | InternalNamePath;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type StoreValue = any;
-export type Store = Record<string, StoreValue>;
+export type Store = Record<string | number, StoreValue>;
 
 export type NameCollection = {
 	nameList?: NamePath[];
@@ -40,12 +40,29 @@ export interface Meta {
 	name: InternalNamePath;
 	validated: boolean;
 }
+export type GetValueTypeByInternalNamePath<T, K> = K extends keyof T
+	? T[K]
+	: K extends [infer L, ...infer R]
+		? L extends keyof T
+			? GetValueTypeByInternalNamePath<T[L], R>
+			: T
+		: T;
+
+export type GetValueTypeByNamePath<T, N> = N extends InternalNamePath
+	? GetValueTypeByInternalNamePath<T, N>
+	: N extends keyof T
+		? T[N]
+		: never;
+
 export interface FormInstance<T extends Store = Store> {
 	// todo 根据 T 与 NamePath 的关系，推导出 返回值 的类型
-	getFieldValue: <const NP extends NamePath>(name: NP) => StoreValue;
+	getFieldValue: <const NP extends NamePath>(name: NP) => GetValueTypeByNamePath<T, NP>;
 	getFieldsValue: (collection?: NameCollection) => Partial<T>;
 	// todo 根据 T 与 NamePath 的关系，推导出 value 的类型
-	setFieldValue: <const NP extends NamePath>(name: NP, value: StoreValue) => void;
+	setFieldValue: <const NP extends NamePath>(
+		name: NP,
+		value: GetValueTypeByNamePath<T, NP>,
+	) => void;
 	setFieldsValue: (values: ValuesInT<T>) => void;
 	resetFields: (collection?: Omit<NameCollection, 'getStoreAll'>) => void;
 	validateFields: (options?: ValidateParams) => Promise<Partial<T>>;

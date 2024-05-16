@@ -94,4 +94,4 @@ const Form = <T extends Store = Store>(
 const WrapperForm = forwardRef(Form) as <T extends Store>(
 	props: FormProps<T> & { ref?: React.Ref<FormRef<T>> },
 ) => React.ReactElement;
-export default memo(WrapperForm);
+export default memo(WrapperForm) as typeof WrapperForm;
